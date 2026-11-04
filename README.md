@@ -5,7 +5,8 @@ Historical `TINIHI-Labs/net-Circuit-FPGA` provenance identifies this same
 repository before its rename.
 
 Independent Lab-First FPGA source/scaffold **0.1.1**. The portable controller,
-disabled future instrument interface retain their Remote source bytes. The
+disabled future instrument interface preserve their Remote behavior. Canonical
+module names have thin legacy wrappers. The
 original testbench retains every assertion and holds reset through one clock
 edge before release, correcting simulator-dependent declaration initialization.
 Hardware drivers belong to [CIRNET-Hardware](https://github.com/CIRNETLAB/CIRNET-Hardware);
@@ -51,7 +52,7 @@ ABSOLUTE_CONTRACTS_MANIFEST`; run `python -B -m pip check`.
 Run `python -B scripts/install_toolchain.py --archive ABSOLUTE_PINNED_ARCHIVE`,
 or omit `--archive` to download the pinned official release. It extracts a fresh
 owned tool root and writes archive/binary/version provenance there; CI receives
-`NETCIRCUIT_FPGA_TOOLCHAIN_ROOT`. Set that variable locally to the printed root.
+`CIRNET_FPGA_TOOLCHAIN_ROOT`. Set that variable locally to the printed root.
 Run `python -B scripts/check_rtl.py --toolchain-root ABSOLUTE_OWNED_ROOT` and
 `python -B -m pytest --basetemp ABSOLUTE_OWNED_SESSION/pytest`. There are no
 optional parser/compiler/simulation skips or PATH fallback. Both original and
@@ -59,7 +60,7 @@ supplemental testbenches must emit their PASS markers. Immediate drive inhibit
 and synchronous FAULT/routing cleanup are distinct abstract simulation checks.
 
 Build with `python -B scripts/build_source.py --output
-ABSOLUTE_OWNED_SESSION/netcircuit-fpga-scaffold-0.1.1.tar.gz --provenance
+ABSOLUTE_OWNED_SESSION/cirnet-fpga-scaffold-0.1.1.tar.gz --provenance
 ABSOLUTE_SOURCE_PROVENANCE_JSON`. The source archive has deterministic metadata,
 an exact file/SHA256 inventory and `fpga-artifact.json` at its root. Source
 fingerprint is SHA256 of sorted `sha256  path` LF lines; identity excludes itself
@@ -79,3 +80,7 @@ guarded session cleanup. Preserve LICENSE, original RTL/testbench, frozen source
 historical evidence and Git ancestry. No board programming or physical rollback
 is claimed. Canonical system authority remains Lab-First v3.1 in
 [CIRNET-Remote architecture](https://github.com/CIRNETLAB/CIRNET-Remote/blob/master/docs/ARCHITECTURE.md).
+
+Active modules are `cirnet_experiment_top` and `cirnet_instrument_scaffold`;
+legacy module wrappers preserve published consumer instantiations. `CIRNET_*`
+settings override `NETCIRCUIT_*`, with both names synchronized for pinned tools.

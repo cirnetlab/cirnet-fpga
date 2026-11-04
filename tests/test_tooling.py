@@ -30,7 +30,9 @@ def test_source_archive_rebuild_has_same_bytes_and_rejects_unsafe_input(tmp_path
         assert result.returncode == 0, result.stdout+result.stderr
     assert first.read_bytes() == second.read_bytes()
     with tarfile.open(first, 'r:gz') as archive:
-        source = json.loads(archive.extractfile('fpga-artifact.json').read())['source']
+        metadata = json.loads(archive.extractfile('fpga-artifact.json').read())
+        assert metadata['name'] == 'cirnet-fpga-scaffold'
+        source = metadata['source']
     assert source['repository'] == 'https://github.com/CIRNETLAB/CIRNET-FPGA.git'
     historical = json.loads(historical_provenance)
     assert source['originalRepository'] == historical['originalRepository']
@@ -130,3 +132,13 @@ def test_archive_derived_execution_closure_rejects_missing_or_modified_support(t
     bad=subprocess.run(command,capture_output=True,text=True,timeout=60)
     assert bad.returncode!=0
     assert 'support' in bad.stderr.lower()
+
+
+def test_canonical_environment_names_override_and_export_legacy_aliases():
+    from scripts.environment import getenv, export_environment
+    values = {'CIRNET_FPGA_TOOLCHAIN_ROOT': 'canonical', 'NETCIRCUIT_FPGA_TOOLCHAIN_ROOT': 'legacy',
+              'NETCIRCUIT_CONTRACTS_ARTIFACT_MANIFEST': 'old-manifest'}
+    exported = export_environment(values)
+    assert getenv('NETCIRCUIT_FPGA_TOOLCHAIN_ROOT', environ=values) == 'canonical'
+    assert exported['CIRNET_FPGA_TOOLCHAIN_ROOT'] == exported['NETCIRCUIT_FPGA_TOOLCHAIN_ROOT'] == 'canonical'
+    assert exported['CIRNET_CONTRACTS_ARTIFACT_MANIFEST'] == exported['NETCIRCUIT_CONTRACTS_ARTIFACT_MANIFEST'] == 'old-manifest'

@@ -82,9 +82,10 @@ def install(archive=None):
         tools[name]={'path':'bin/'+executable.name,'sha256':sha256(executable),'versionOutput':output}
     provenance={'schemaVersion':1,'platform':key,'release':lock['tag'],'archivePath':str(archive),
                 'archiveSha256':selected['sha256'],'tools':tools}
-    (root/'.netcircuit-toolchain.json').write_text(json.dumps(provenance,indent=2)+'\n')
+    (root/'.cirnet-toolchain.json').write_text(json.dumps(provenance,indent=2)+'\n')
     if os.environ.get('GITHUB_ENV'):
         with Path(os.environ['GITHUB_ENV']).open('a',encoding='utf-8') as output:
+            output.write('CIRNET_FPGA_TOOLCHAIN_ROOT='+str(root)+'\n')
             output.write('NETCIRCUIT_FPGA_TOOLCHAIN_ROOT='+str(root)+'\n')
     print(json.dumps({'root':str(root),'provenance':provenance},indent=2))
     return root

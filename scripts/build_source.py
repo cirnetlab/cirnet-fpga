@@ -12,7 +12,7 @@ import tarfile
 from artifact_paths import validate_artifact_directory
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = 'netcircuit-fpga-scaffold'
+NAME = 'cirnet-fpga-scaffold'
 REPOSITORY = 'https://github.com/CIRNETLAB/CIRNET-FPGA.git'
 REPOSITORY_ALIASES = {REPOSITORY, REPOSITORY.removesuffix('.git'),
                       'https://github.com/TINIHI-Labs/net-Circuit-FPGA.git',

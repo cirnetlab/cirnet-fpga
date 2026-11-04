@@ -14,6 +14,7 @@ module tb_permit_matrix;
     wire la,scope,generator,capture_valid,output_enable,sdram_request;
     integer permit_index,tick;
     reg previous_phase;
+    // Exercise legacy wrapper forwarding against the unchanged permit matrix.
     netcircuit_experiment_top dut(.*);
     netcircuit_instrument_scaffold instruments(
         .control_clk(clk),.acquisition_clk(clk),.generator_clk(clk),.sdram_clk(clk),.reset_n(reset_n),

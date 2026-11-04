@@ -23,5 +23,7 @@ def test_experiment_controller_docs_name_both_targets_and_no_sdram_prototype():
 def test_top_is_explicit_placeholder_not_feature_claim():
     text=(FPGA/'experiment-controller/rtl/top.v').read_text().lower()
     assert 'placeholder' in text
+    assert 'module cirnet_experiment_top' in text
     assert 'module netcircuit_experiment_top' in text
+    assert 'cirnet_experiment_top implementation' in text
     assert 'sdram controller implemented' not in text

@@ -5,6 +5,10 @@ from importlib.metadata import distribution
 from importlib.resources import files
 import json
 import os
+try:
+    from scripts.environment import getenv
+except ModuleNotFoundError:
+    from environment import getenv
 from pathlib import Path, PurePosixPath
 import posixpath
 import re
@@ -74,7 +78,7 @@ def authenticate_execution_files(root,archive,expected_archive_sha256):
 def verify_toolchain(root,provenance=None):
     root=Path(root).resolve()
     validate_artifact_directory(root)
-    provenance=Path(provenance) if provenance else root/'.netcircuit-toolchain.json'
+    provenance=Path(provenance) if provenance else (root/'.cirnet-toolchain.json' if (root/'.cirnet-toolchain.json').exists() else root/'.netcircuit-toolchain.json')
     value=json.loads(provenance.read_text())
     lock=json.loads((ROOT/'integration/toolchain-lock.json').read_text())
     key=selected_platform();selected=lock['platforms'][key]
@@ -116,7 +120,7 @@ def main(argv=None):
     parser.add_argument('--toolchain-root',type=Path)
     parser.add_argument('--toolchain',type=Path,help='Explicit provenance JSON, primarily for diagnostics.')
     args=parser.parse_args(argv)
-    selected=args.toolchain_root or os.environ.get('NETCIRCUIT_FPGA_TOOLCHAIN_ROOT')
+    selected=args.toolchain_root or getenv('CIRNET_FPGA_TOOLCHAIN_ROOT')
     if not selected and args.toolchain: selected=args.toolchain.parent
     if not selected: parser.error('An explicit pinned toolchain root is required; no PATH fallback.')
     tools,provenance,pin=verify_toolchain(selected,args.toolchain)

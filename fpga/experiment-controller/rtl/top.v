@@ -2,7 +2,7 @@
 // Lab-First control scaffold / electrical integration PLACEHOLDER.
 // Abstract synchronous permits/handshakes; no topology scanner, switching,
 // protection circuit, transport framing or board pin/timing implementation.
-module netcircuit_experiment_top (
+module cirnet_experiment_top (
     input wire clk,
     input wire reset_n,
     input wire command_valid,
@@ -120,4 +120,57 @@ module netcircuit_experiment_top (
             end
         end
     end
+endmodule
+
+// Compatibility alias for published scaffold consumers.
+module netcircuit_experiment_top (
+    input wire clk,
+    input wire reset_n,
+    input wire command_valid,
+    input wire [7:0] command_code,
+    input wire safe_condition,
+    input wire scan_done,
+    input wire scan_success,
+    input wire plan_valid,
+    input wire routing_ready,
+    input wire protection_ready,
+    input wire watchdog_armed,
+    input wire watchdog_expired,
+    input wire fault_in,
+    input wire [31:0] clock_half_period_ticks,
+    output wire command_accepted,
+    output wire [3:0] error_code,
+    output wire [3:0] state,
+    output wire topology_scan_enable,
+    output wire routing_enable,
+    output wire drive_enable,
+    output wire experiment_clock,
+    output wire safe_state,
+    output wire status_led
+);
+    cirnet_experiment_top implementation (
+        .clk(clk),
+        .reset_n(reset_n),
+        .command_valid(command_valid),
+        .command_code(command_code),
+        .safe_condition(safe_condition),
+        .scan_done(scan_done),
+        .scan_success(scan_success),
+        .plan_valid(plan_valid),
+        .routing_ready(routing_ready),
+        .protection_ready(protection_ready),
+        .watchdog_armed(watchdog_armed),
+        .watchdog_expired(watchdog_expired),
+        .fault_in(fault_in),
+        .clock_half_period_ticks(clock_half_period_ticks),
+        .command_accepted(command_accepted),
+        .error_code(error_code),
+        .state(state),
+        .topology_scan_enable(topology_scan_enable),
+        .routing_enable(routing_enable),
+        .drive_enable(drive_enable),
+        .experiment_clock(experiment_clock),
+        .safe_state(safe_state),
+        .status_led(status_led)
+    );
 endmodule

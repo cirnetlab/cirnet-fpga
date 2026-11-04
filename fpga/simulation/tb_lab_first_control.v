@@ -15,7 +15,7 @@ module tb_lab_first_control;
     wire la_available,scope_available,generator_available,capture_valid,output_enable,sdram_request;
     integer i,seen_high;
 
-    netcircuit_experiment_top dut (
+    cirnet_experiment_top dut (
         .clk(clk),.reset_n(reset_n),.command_valid(command_valid),.command_code(command_code),
         .safe_condition(safe_condition),.scan_done(scan_done),.scan_success(scan_success),
         .plan_valid(plan_valid),.routing_ready(routing_ready),.protection_ready(protection_ready),
@@ -24,7 +24,7 @@ module tb_lab_first_control;
         .error_code(error_code),.state(state),.topology_scan_enable(topology_scan_enable),
         .routing_enable(routing_enable),.drive_enable(drive_enable),.experiment_clock(experiment_clock),
         .safe_state(safe_state),.status_led(status_led));
-    netcircuit_instrument_scaffold instruments (
+    cirnet_instrument_scaffold instruments (
         .control_clk(clk),.acquisition_clk(clk),.generator_clk(clk),.sdram_clk(clk),.reset_n(reset_n),
         .capture_request(1'b1),.generator_request(1'b1),.logic_analyzer_available(la_available),
         .scope_2ch_available(scope_available),.generator_2ch_available(generator_available),
