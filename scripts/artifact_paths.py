@@ -5,9 +5,9 @@ from importlib.metadata import PackageNotFoundError, distribution
 import json
 import os
 try:
-    from scripts.environment import getenv, export_environment
+    from scripts.environment import getenv
 except ModuleNotFoundError:
-    from environment import getenv, export_environment
+    from environment import getenv
 
 from pathlib import Path
 
@@ -33,7 +33,10 @@ except (PackageNotFoundError, OSError, KeyError, RuntimeError) as error:
 
 
 def artifact_context(context=None):
-    os.environ.update(export_environment())
+    for suffix in ('ARTIFACTS_CONTEXT', 'ARTIFACTS_SESSION', 'ARTIFACTS_DIR'):
+        value = getenv('CIRNET_' + suffix)
+        if value is not None:
+            os.environ['CIRNET_' + suffix] = os.environ['NETCIRCUIT_' + suffix] = value
     if context is not None or getenv('CIRNET_ARTIFACTS_CONTEXT'):
         return _installed.artifact_context(context)
     selected = _installed.artifact_context({'owner': 'fpga-context-discovery', 'roots': [str(_ROOT)]})
@@ -41,7 +44,14 @@ def artifact_context(context=None):
 
 
 def artifact_directory(subdirectory='', directory=None, *, context=None):
-    return _installed.artifact_directory(subdirectory, directory, context=artifact_context(context))
+    result = _installed.artifact_directory(subdirectory, directory, context=artifact_context(context))
+    # Allocation outputs belong to the selected immutable DEV implementation.
+    # Mirror its result before a stale canonical input can override a new session.
+    prefix = 'NETCIRCUIT_' if _name == 'netcircuit-artifact-paths' else 'CIRNET_'
+    for suffix in ('ARTIFACTS_SESSION', 'ARTIFACTS_CONTEXT'):
+        if prefix + suffix in os.environ:
+            os.environ['CIRNET_' + suffix] = os.environ['NETCIRCUIT_' + suffix] = os.environ[prefix + suffix]
+    return result
 
 
 def validate_artifact_directory(directory, *, context=None):

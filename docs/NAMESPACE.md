@@ -49,3 +49,5 @@ child. Native gate log SHA256
 `40296aadbbfd24749792d0d8b93e900289d5a30118906b2707bb825b13f8f9b8`;
 complete native pytest log
 `3b746eaace80eaf4b95a6e02d97cf679c33a322f3defadc2ac2cd3f5d42b39b6`.
+
+The Python allocator adapter follow-up passes two native regression tests against the pinned DEV package: explicit output remains separate from the inherited active session, and canonical empty session settings synchronize selected output aliases for stable reuse. Test cleanup is bounded to each disposable fixture.
