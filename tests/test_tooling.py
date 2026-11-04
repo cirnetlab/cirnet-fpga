@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tarfile
+from zipfile import ZipFile
 
 import pytest
 
@@ -82,6 +83,23 @@ def test_contract_provenance_rejects_source_shadowing(tmp_path):
                           env={**os.environ,'PYTHONPATH':str(tmp_path)},capture_output=True,text=True,timeout=60)
     assert result.returncode!=0
     assert 'shadowed' in result.stderr.lower()
+
+
+@pytest.mark.parametrize('name', ['cirnet-contracts', 'netcircuit-contracts'])
+def test_contract_wheel_uses_selected_distribution_identity(tmp_path, name):
+    from scripts.contracts_artifact import selected_wheel_details
+
+    normalized = name.replace('-', '_')
+    wheel = tmp_path / f'{normalized}-0.1.1-py3-none-any.whl'
+    with ZipFile(wheel, 'w') as archive:
+        archive.writestr(f'{normalized}-0.1.1.dist-info/METADATA', f'Name: {name}\nVersion: 0.1.1\n')
+    digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    manifest = tmp_path / 'contracts.json'
+    manifest.write_text(json.dumps({'python': {'path': str(wheel), 'sha256': digest}}))
+    assert selected_wheel_details(manifest) == (wheel, digest)
+    manifest.write_text(json.dumps({'python': {'path': str(wheel), 'sha256': '0' * 64}}))
+    with pytest.raises(ValueError, match='SHA256'):
+        selected_wheel_details(manifest)
 
 
 @pytest.mark.parametrize('changed,mutation',[

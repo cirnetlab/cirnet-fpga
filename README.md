@@ -2,8 +2,7 @@
 
 Current repository: [CIRNETLAB/CIRNET-FPGA](https://github.com/CIRNETLAB/CIRNET-FPGA).
 Historical `TINIHI-Labs/net-Circuit-FPGA` provenance identifies this same
-repository before its rename. Local checkout directories and technical
-package/module/environment/protocol names retain their existing identities.
+repository before its rename.
 
 Independent Lab-First FPGA source/scaffold **0.1.1**. The portable controller,
 disabled future instrument interface retain their Remote source bytes. The
@@ -26,8 +25,13 @@ unavailable design-target example says `2.0-scaffold`; that illustrative label
 is rejected by the executable logical schema. It is never rewritten or treated
 as supported firmware.
 
-Verification uses installed immutable Contracts and the independent DEV
-allocator, Node 22, exact `pyslang==12.0.0`, and the official digest-pinned OSS CAD
+Verification uses the explicitly selected Contracts 0.1.1 wheel and the
+independent DEV allocator. The Python distribution is `cirnet-contracts`, with
+the import name `contracts`. Existing published selections identify the original
+`netcircuit-contracts` wheel by SHA-256. Use a fresh environment when switching
+distributions because both own the same import package.
+
+The toolchain uses Node 22, exact `pyslang==12.0.0`, and the official digest-pinned OSS CAD
 Suite 2026-10-26. Icarus/vvp report the upstream bundled development identity
 `14.0 (devel) (s20260301-713-gf9111a949-dirty)`. Missing/wrong tools fail acceptance.
 The complete hash-locked Python closure supports Windows/Python 3.14 and

@@ -2,8 +2,9 @@
 import base64
 from email.parser import Parser
 import hashlib
-from importlib.metadata import distribution
+from importlib.metadata import PackageNotFoundError, distribution
 from importlib.resources import files
+from io import BytesIO
 import json
 import os
 from pathlib import Path
@@ -12,23 +13,40 @@ import subprocess
 from zipfile import ZipFile
 
 VERSION = '0.1.1'
-NAME = 'netcircuit-contracts'
+NAME = 'cirnet-contracts'
+LEGACY_NAME = 'netcircuit-contracts'
+NAMES = (NAME, LEGACY_NAME)
+
+
+def verified_wheel_name(payload, digest):
+    if len(digest) != 64 or hashlib.sha256(payload).hexdigest() != digest.lower():
+        raise ValueError('Contracts artifact SHA256 does not match the selected manifest.')
+    with ZipFile(BytesIO(payload)) as archive:
+        metadata = [name for name in archive.namelist() if name.endswith('.dist-info/METADATA')]
+        if len(metadata) != 1:
+            raise ValueError('Expected one wheel distribution metadata file.')
+        value = Parser().parsestr(archive.read(metadata[0]).decode('utf-8'))
+    if value['Name'] not in NAMES or value['Version'] != VERSION:
+        raise ValueError(f'Expected a selected Contracts {VERSION} wheel ({", ".join(NAMES)}); got {value["Name"]}=={value["Version"]}.')
+    return value['Name']
 
 
 def verify_wheel(path, digest):
     path = Path(path)
     if not path.is_absolute():
         raise ValueError('Contracts artifact path must be absolute.')
-    if len(digest) != 64 or hashlib.sha256(path.read_bytes()).hexdigest() != digest.lower():
-        raise ValueError('Contracts artifact SHA256 does not match the selected manifest.')
-    with ZipFile(path) as archive:
-        metadata = [name for name in archive.namelist() if name.endswith('.dist-info/METADATA')]
-        if len(metadata) != 1:
-            raise ValueError('Expected one wheel distribution metadata file.')
-        value = Parser().parsestr(archive.read(metadata[0]).decode('utf-8'))
-    if value['Name'] != NAME or value['Version'] != VERSION:
-        raise ValueError(f'Expected {NAME}=={VERSION}; got {value["Name"]}=={value["Version"]}.')
+    verified_wheel_name(path.read_bytes(), digest)
     return path
+
+
+def installed_contracts():
+    installed = {}
+    for name in NAMES:
+        try:
+            installed[name] = distribution(name)
+        except PackageNotFoundError:
+            pass
+    return installed
 
 
 def selected_wheel_details(manifest=None):
@@ -47,13 +65,19 @@ def selected_wheel(manifest=None):
 
 
 SELECTED_INSTALL_PROBE = r'''
-from importlib.metadata import distribution
+from importlib.metadata import PackageNotFoundError, distribution
 import json
 from pathlib import Path
 import sys
 from zipfile import ZipFile
-wheel,digest=sys.argv[1:]
-artifact=distribution('netcircuit-contracts')
+wheel,digest,name,other_name=sys.argv[1:]
+try:
+    distribution(other_name)
+except PackageNotFoundError:
+    pass
+else:
+    raise ValueError('Both Contracts distributions are installed. Select one in a fresh environment.')
+artifact=distribution(name)
 assert artifact.version=='0.1.1','selected archive version differs from the installation'
 direct=json.loads(artifact.read_text('direct_url.json') or '{}')
 archive_info=direct.get('archive_info',{})
@@ -74,19 +98,28 @@ print(json.dumps({'selected_sha256':digest,'selected_files':len(expected)}))
 
 
 def verify_selected_install(wheel, digest, *, python=None):
-    wheel = verify_wheel(wheel, digest)
+    wheel = Path(wheel)
+    if not wheel.is_absolute():
+        raise ValueError('Contracts artifact path must be absolute.')
+    name = verified_wheel_name(wheel.read_bytes(), digest)
+    other_name = LEGACY_NAME if name == NAME else NAME
     result = subprocess.run([str(python or sys.executable), '-I', '-B', '-c', SELECTED_INSTALL_PROBE,
-                             str(wheel), digest.lower()], capture_output=True, text=True)
+                             str(wheel), digest.lower(), name, other_name], capture_output=True, text=True)
     if result.returncode:
         raise RuntimeError('Installed payload does not match the selected archive: ' + result.stderr.strip())
     return json.loads(result.stdout)
 
 
 def installed_provenance(*, verify_hashes=True):
+    installed = installed_contracts()
+    if not installed:
+        raise ValueError(f'Install the selected Contracts wheel ({NAME}=={VERSION}).')
+    if len(installed) != 1:
+        raise ValueError('Both Contracts distributions are installed. Select one in a fresh environment.')
+    name, artifact = next(iter(installed.items()))
     import contracts
-    artifact = distribution(NAME)
     if artifact.version != VERSION:
-        raise ValueError(f'Expected {NAME}=={VERSION}; found {artifact.version}.')
+        raise ValueError(f'Expected {name}=={VERSION}; found {artifact.version}.')
     direct = artifact.read_text('direct_url.json')
     if direct and 'dir_info' in json.loads(direct):
         raise ValueError('Contracts must come from a wheel, not an editable/source-directory install.')
@@ -113,12 +146,12 @@ def installed_provenance(*, verify_hashes=True):
         checked += 1
     if not checked:
         raise ValueError('Installed Contracts has no owned package resources.')
-    for name, module in tuple(sys.modules.items()):
-        if name == 'contracts' or name.startswith('contracts.'):
+    for module_name, module in tuple(sys.modules.items()):
+        if module_name == 'contracts' or module_name.startswith('contracts.'):
             origin = getattr(module, '__file__', None)
             if origin and not Path(origin).resolve().is_relative_to(root):
-                raise ValueError(f'Contracts submodule shadowed by source: {name}: {origin}')
-    result = {'name': NAME, 'version': VERSION, 'package_root': str(root), 'owned_files': checked}
+                raise ValueError(f'Contracts submodule shadowed by source: {module_name}: {origin}')
+    result = {'name': name, 'version': VERSION, 'package_root': str(root), 'owned_files': checked}
     if os.environ.get('NETCIRCUIT_CONTRACTS_ARTIFACT_MANIFEST'):
         selected, digest = selected_wheel_details()
         result.update(verify_selected_install(selected, digest))
