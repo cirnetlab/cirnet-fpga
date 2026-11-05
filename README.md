@@ -1,5 +1,7 @@
 # CIRNET-FPGA
 
+[English documentation](docs/en/index.md) · [Tài liệu tiếng Việt](docs/vi/index.md)
+
 Current repository: [cirnetlab/cirnet-fpga](https://github.com/cirnetlab/cirnet-fpga).
 
 Independent Lab-First FPGA source/scaffold **0.1.2**. The portable controller,
