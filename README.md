@@ -2,7 +2,7 @@
 
 Current repository: [cirnetlab/cirnet-fpga](https://github.com/cirnetlab/cirnet-fpga).
 
-Independent Lab-First FPGA source/scaffold **0.1.1**. The portable controller,
+Independent Lab-First FPGA source/scaffold **0.1.2**. The portable controller,
 disabled future instrument interface preserve their Remote behavior. Canonical
 module names have thin legacy wrappers. The
 original testbench retains every assertion and holds reset through one clock
@@ -17,18 +17,17 @@ implementation. Pinout, Quartus synthesis/timing and electrical measurements
 remain **TBD_BY_HARDWARE_DESIGN**. Software/RTL results cannot close OPEN-ABI,
 OPEN-FRESHNESS or OPEN-HARDWARE.
 
-Version domains are independent: Contracts **0.1.1**, logical control
+Version domains are independent: Contracts **0.1.2**, logical control
 **1.0-scaffold**, reserved register map **1.0-reserved**, physical firmware and
 protocol **UNAVAILABLE**. B12 is explicitly resolved: Contracts' preserved
 unavailable design-target example says `2.0-scaffold`; that illustrative label
 is rejected by the executable logical schema. It is never rewritten or treated
 as supported firmware.
 
-Verification uses the explicitly selected Contracts 0.1.1 wheel and the
-independent DEV allocator. The Python distribution is `cirnet-contracts`, with
-the import name `contracts`. Existing published selections identify the original
-`netcircuit-contracts` wheel by SHA-256. Use a fresh environment when switching
-distributions because both own the same import package.
+Verification selects the exact `cirnet-contracts==0.1.2` wheel by SHA-256
+and uses the independently pinned DEV allocator. The Python import remains
+`contracts`. Verify historical selections in separate environments because
+the former distribution owns the same import package.
 
 The toolchain uses Node 26, exact `pyslang==12.0.0`, and the official digest-pinned OSS CAD
 Suite 2026-10-26. Icarus/vvp report the upstream bundled development identity
@@ -58,7 +57,7 @@ supplemental testbenches must emit their PASS markers. Immediate drive inhibit
 and synchronous FAULT/routing cleanup are distinct abstract simulation checks.
 
 Build with `python -B scripts/build_source.py --output
-ABSOLUTE_OWNED_SESSION/cirnet-fpga-scaffold-0.1.1.tar.gz --provenance
+ABSOLUTE_OWNED_SESSION/cirnet-fpga-scaffold-0.1.2.tar.gz --provenance
 ABSOLUTE_SOURCE_PROVENANCE_JSON`. The source archive has deterministic metadata,
 an exact file/SHA256 inventory and `fpga-artifact.json` at its root. Source
 fingerprint is SHA256 of sorted `sha256  path` LF lines; identity excludes itself
@@ -68,12 +67,13 @@ required. Fresh exports must carry explicit provenance. The initial
 migration against both preserved baseline revisions.
 New builds record `https://github.com/cirnetlab/cirnet-fpga.git` as the source
 repository and `https://github.com/cirnetlab/cirnet-remote.git` as the original
-repository for the recorded original revision. Source inputs can still use the
-former capitalization or recorded pre-transfer URLs. The historical input file
-is never rewritten. Existing immutable
+repository for the recorded original revision. The tracked provenance records
+the migration baseline revisions and dirty state. Release builds use the
+actual release commit and a clean source export. Existing immutable
 [v0.1.1](https://github.com/cirnetlab/cirnet-fpga/releases/tag/v0.1.1) artifacts
-retain their old source/provenance and bytes; compare a fresh committed build
-before selecting it, rather than treating the version number as a byte identity.
+retain their source provenance and bytes. Verify a fresh committed build before
+selecting the v0.1.2 candidate. The release name is `cirnet-fpga-v0.1.2` and
+the tag is `v0.1.2`.
 
 Inspect external diagnostics before cleanup using the installed allocator's
 guarded session cleanup. Preserve LICENSE, original RTL/testbench, frozen source,
@@ -84,6 +84,23 @@ is claimed. Canonical system authority remains Lab-First v3.1 in
 Active modules are `cirnet_experiment_top` and `cirnet_instrument_scaffold`;
 legacy module wrappers preserve published consumer instantiations. `CIRNET_*`
 settings override `NETCIRCUIT_*`, with both names synchronized for pinned tools.
+
+## 2026-11-05 FPGA 0.1.2 candidate
+
+Native Windows verification at UTC+07:00 used an external export of the
+uncommitted candidate based on `f02a928802c48644ab8ff79226970e8bec66ffc4`,
+CPython 3.14.4, the exact canonical Contracts 0.1.2 wheel, pyslang 12.0.0,
+and the SHA256-pinned OSS CAD Suite. Both top modules compiled, and the two
+testbenches reported `LAB_FIRST_RTL_PASS` and `PERMIT_MATRIX_RTL_PASS`.
+All 31 pytest cases passed after the bootstrap fixture restored both
+allocator environment prefixes. Actionlint 1.7.12 passed the workflow.
+Raw output used the external session owned by `cirnet-release-014-20261105`.
+The RTL report SHA256 is
+`dfc65d2528f4a3bc4e357d4092cd248cf585d38127302c2e39d1cec463afdac0`
+and the pytest log SHA256 is
+`a3eb13f3cbb36097cbaba08d6365ad552456db095c5d870d10e5259a40299f40`.
+The release archive requires the actual committed revision. These software
+tests cover the scaffold and abstract control behavior.
 
 ## Node 26 LTS CI baseline (2026-11-05)
 

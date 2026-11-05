@@ -16,7 +16,7 @@ import sys
 import subprocess
 from zipfile import ZipFile
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 NAME = 'cirnet-contracts'
 LEGACY_NAME = 'netcircuit-contracts'
 NAMES = (NAME, LEGACY_NAME)
@@ -30,8 +30,8 @@ def verified_wheel_name(payload, digest):
         if len(metadata) != 1:
             raise ValueError('Expected one wheel distribution metadata file.')
         value = Parser().parsestr(archive.read(metadata[0]).decode('utf-8'))
-    if value['Name'] not in NAMES or value['Version'] != VERSION:
-        raise ValueError(f'Expected a selected Contracts {VERSION} wheel ({", ".join(NAMES)}); got {value["Name"]}=={value["Version"]}.')
+    if value['Name'] != NAME or value['Version'] != VERSION:
+        raise ValueError(f'Expected {NAME}=={VERSION}; got {value["Name"]}=={value["Version"]}.')
     return value['Name']
 
 
@@ -82,7 +82,7 @@ except PackageNotFoundError:
 else:
     raise ValueError('Both Contracts distributions are installed. Select one in a fresh environment.')
 artifact=distribution(name)
-assert artifact.version=='0.1.1','selected archive version differs from the installation'
+assert artifact.version=='0.1.2','selected archive version differs from the installation'
 direct=json.loads(artifact.read_text('direct_url.json') or '{}')
 archive_info=direct.get('archive_info',{})
 actual_digest=archive_info.get('hashes',{}).get('sha256')
@@ -121,9 +121,9 @@ def installed_provenance(*, verify_hashes=True):
     if len(installed) != 1:
         raise ValueError('Both Contracts distributions are installed. Select one in a fresh environment.')
     name, artifact = next(iter(installed.items()))
+    if name != NAME or artifact.version != VERSION:
+        raise ValueError(f'Expected {NAME}=={VERSION}; found {name}=={artifact.version}.')
     import contracts
-    if artifact.version != VERSION:
-        raise ValueError(f'Expected {name}=={VERSION}; found {artifact.version}.')
     direct = artifact.read_text('direct_url.json')
     if direct and 'dir_info' in json.loads(direct):
         raise ValueError('Contracts must come from a wheel, not an editable/source-directory install.')

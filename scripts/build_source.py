@@ -13,24 +13,11 @@ from artifact_paths import validate_artifact_directory
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME = 'cirnet-fpga-scaffold'
-GITHUB_PREFIX = 'https://github.com/'
-REPOSITORY_SLUG = 'cirnetlab/cirnet-fpga'
-REPOSITORY = f'{GITHUB_PREFIX}{REPOSITORY_SLUG}.git'
-REPOSITORY_ALIASES = {'https://github.com/TINIHI-Labs/net-Circuit-FPGA'}
-ORIGINAL_REPOSITORY_SLUG = 'cirnetlab/cirnet-remote'
-ORIGINAL_REPOSITORY = f'{GITHUB_PREFIX}{ORIGINAL_REPOSITORY_SLUG}.git'
-ORIGINAL_REPOSITORY_ALIASES = {
-    'https://github.com/net-Circuit-Remote/net-Circuit-Remote',
-    'https://github.com/TINIHI-Labs/net-Circuit-Remote',
-}
+REPOSITORY = 'https://github.com/cirnetlab/cirnet-fpga.git'
+ORIGINAL_REPOSITORY = 'https://github.com/cirnetlab/cirnet-remote.git'
 SOURCE_NAMES = {'README.md','LICENSE','VERSION','.gitignore','.gitattributes','pytest.ini',
                 'requirements-verification.lock','fpga','tests','scripts','integration','docs','.github'}
 SUFFIXES = {'.md','.py','.mjs','.json','.v','.lock','.yml','.yaml','.ini'}
-
-
-def matches_repository(value, slug, aliases):
-    url = value.removesuffix('.git')
-    return url.removeprefix(GITHUB_PREFIX).lower() == slug or url in aliases
 
 
 def source_files(root):
@@ -80,24 +67,23 @@ def build(output,provenance,root=ROOT):
     for key in ('repository','originalRepository'):
         if not isinstance(source.get(key),str) or not source[key].startswith('https://'):
             raise ValueError('Explicit source repository provenance is required.')
-    if not matches_repository(source['repository'], REPOSITORY_SLUG, REPOSITORY_ALIASES):
-        raise ValueError('Source repository must identify cirnet-fpga or its recorded historical name.')
-    if not matches_repository(source['originalRepository'], ORIGINAL_REPOSITORY_SLUG, ORIGINAL_REPOSITORY_ALIASES):
-        raise ValueError('Original repository must identify cirnet-remote or its recorded historical name.')
+    if source['repository'].removesuffix('.git') != REPOSITORY.removesuffix('.git'):
+        raise ValueError('Source repository must identify cirnetlab/cirnet-fpga.')
+    if source['originalRepository'].removesuffix('.git') != ORIGINAL_REPOSITORY.removesuffix('.git'):
+        raise ValueError('Original repository must identify cirnetlab/cirnet-remote.')
     for key in ('revision','originalRevision'):
         if not re.fullmatch('[0-9a-f]{40}',source.get(key,'')):
             raise ValueError('Explicit source revision provenance is required.')
     if not isinstance(source.get('uncommittedMigration'),bool):
         raise ValueError('Explicit uncommittedMigration provenance is required.')
-    # New artifacts use the current repository locations with the recorded
-    # original revision. The caller's historical provenance stays untouched.
+    # Store one canonical URL spelling and preserve the original revision.
     source={**source,'repository':REPOSITORY,'originalRepository':ORIGINAL_REPOSITORY}
     payload=source_files(Path(root))
-    if payload['VERSION'].decode().strip()!='0.1.1':
+    if payload['VERSION'].decode().strip()!='0.1.2':
         raise ValueError('Unsupported scaffold source version.')
     hashes={name:hashlib.sha256(value).hexdigest() for name,value in sorted(payload.items())}
     fingerprint=hashlib.sha256(''.join(f'{digest}  {name}\n' for name,digest in hashes.items()).encode()).hexdigest()
-    identity={'schemaVersion':1,'name':NAME,'version':'0.1.1','kind':'source','contractsVersion':'0.1.1',
+    identity={'schemaVersion':1,'name':NAME,'version':'0.1.2','kind':'source','contractsVersion':'0.1.2',
               'logicalProtocolVersion':'1.0-scaffold','registerMapVersion':'1.0-reserved',
               'physicalAvailable':False,'source':source,'files':hashes,'sourceFingerprint':fingerprint}
     payload['fpga-artifact.json']=(json.dumps(identity,indent=2,sort_keys=True)+'\n').encode()

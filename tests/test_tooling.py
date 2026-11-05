@@ -32,9 +32,13 @@ def test_source_archive_rebuild_has_same_bytes_and_rejects_unsafe_input(tmp_path
     with tarfile.open(first, 'r:gz') as archive:
         metadata = json.loads(archive.extractfile('fpga-artifact.json').read())
         assert metadata['name'] == 'cirnet-fpga-scaffold'
+        assert metadata['version'] == '0.1.2'
+        assert metadata['contractsVersion'] == '0.1.2'
         source = metadata['source']
     assert source['repository'] == 'https://github.com/cirnetlab/cirnet-fpga.git'
     historical = json.loads(historical_provenance)
+    assert historical['repository'] == 'https://github.com/cirnetlab/cirnet-fpga.git'
+    assert historical['originalRepository'] == 'https://github.com/cirnetlab/cirnet-remote.git'
     assert source['originalRepository'] == 'https://github.com/cirnetlab/cirnet-remote.git'
     assert source['originalRevision'] == historical['originalRevision']
     assert provenance.read_bytes() == historical_provenance
@@ -57,8 +61,7 @@ def test_source_archive_rebuild_has_same_bytes_and_rejects_unsafe_input(tmp_path
 
 @pytest.mark.parametrize(('repository', 'original_repository'), [
     ('https://github.com/cirnetlab/cirnet-fpga.git', 'https://github.com/cirnetlab/cirnet-remote.git'),
-    ('https://github.com/CIRNETLAB/CIRNET-FPGA.git', 'https://github.com/TINIHI-Labs/net-Circuit-Remote.git'),
-    ('https://github.com/CirnetLab/Cirnet-Fpga', 'https://github.com/net-Circuit-Remote/net-Circuit-Remote'),
+    ('https://github.com/cirnetlab/cirnet-fpga', 'https://github.com/cirnetlab/cirnet-remote'),
 ])
 def test_source_archive_canonicalizes_repositories(tmp_path, repository, original_repository):
     source = json.loads((ROOT/'integration/source-provenance.json').read_text(encoding='utf-8'))
@@ -111,18 +114,27 @@ def test_contract_provenance_rejects_source_shadowing(tmp_path):
     assert 'shadowed' in result.stderr.lower()
 
 
-@pytest.mark.parametrize('name', ['cirnet-contracts', 'netcircuit-contracts'])
-def test_contract_wheel_uses_selected_distribution_identity(tmp_path, name):
+@pytest.mark.parametrize(('name', 'version', 'accepted'), [
+    ('cirnet-contracts', '0.1.2', True),
+    ('cirnet-contracts', '0.1.1', False),
+    ('netcircuit-contracts', '0.1.1', False),
+    ('netcircuit-contracts', '0.1.2', False),
+])
+def test_contract_wheel_uses_selected_distribution_identity(tmp_path, name, version, accepted):
     from scripts.contracts_artifact import selected_wheel_details
 
     normalized = name.replace('-', '_')
-    wheel = tmp_path / f'{normalized}-0.1.1-py3-none-any.whl'
+    wheel = tmp_path / f'{normalized}-{version}-py3-none-any.whl'
     with ZipFile(wheel, 'w') as archive:
-        archive.writestr(f'{normalized}-0.1.1.dist-info/METADATA', f'Name: {name}\nVersion: 0.1.1\n')
+        archive.writestr(f'{normalized}-{version}.dist-info/METADATA', f'Name: {name}\nVersion: {version}\n')
     digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
     manifest = tmp_path / 'contracts.json'
     manifest.write_text(json.dumps({'python': {'path': str(wheel), 'sha256': digest}}))
-    assert selected_wheel_details(manifest) == (wheel, digest)
+    if accepted:
+        assert selected_wheel_details(manifest) == (wheel, digest)
+    else:
+        with pytest.raises(ValueError, match='Expected cirnet-contracts==0.1.2'):
+            selected_wheel_details(manifest)
     manifest.write_text(json.dumps({'python': {'path': str(wheel), 'sha256': '0' * 64}}))
     with pytest.raises(ValueError, match='SHA256'):
         selected_wheel_details(manifest)
