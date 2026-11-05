@@ -36,7 +36,7 @@ The toolchain uses Node 26, exact `pyslang==12.0.0`, and the official digest-pin
 Suite 2026-10-26. Icarus/vvp report the upstream bundled development identity
 `14.0 (devel) (s20260301-713-gf9111a949-dirty)`. Missing/wrong tools fail acceptance.
 The complete hash-locked Python closure supports Windows/Python 3.14 and
-Linux/Python 3.12; hosted Linux execution is separate evidence.
+Linux/Python 3.14 in current CI; hosted Linux execution is separate evidence.
 
 Bootstrap a private environment with `python -B scripts/bootstrap_contract_tools.py
 --manifest ABSOLUTE_CONTRACTS_MANIFEST` (or exact DEV URL/SHA environment
@@ -94,3 +94,14 @@ locks and published artifacts are unchanged. RTL simulation, native/FPGA build,
 physical board verification and hosted Actions are NOT_RUN for this toolchain
 policy change. Raw evidence was inspected outside Git in the shared session
 owned by `cirnet-node26-compat-20261105`.
+
+## Python 3.14 CI baseline (2026-11-05)
+
+Primary CI selects Python 3.14. All three bootstrap/toolchain selection checks
+pass, and the existing binary-only hash closure verifies for CPython 3.14
+Windows AMD64 and glibc Linux x86_64 without changing versions or hashes.
+actionlint 1.7.12 passes the workflow. RTL, protocol, immutable artifacts and
+historical evidence are unchanged. Native RTL simulation, synthesis, board
+programming, hosted Actions and publication are NOT_RUN for this toolchain
+upgrade. Raw diagnostics are external under the session owned by
+`cirnet-python314-compat-20261105`.
