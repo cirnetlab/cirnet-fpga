@@ -18,7 +18,7 @@ jobs:
           python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '26'
       - name: Bootstrap exact independent allocator before diagnostics
         env:
           CIRNET_ARTIFACTS_DIR: ${{ runner.temp }}/fpga-verification

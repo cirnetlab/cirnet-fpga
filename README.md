@@ -32,7 +32,7 @@ the import name `contracts`. Existing published selections identify the original
 `netcircuit-contracts` wheel by SHA-256. Use a fresh environment when switching
 distributions because both own the same import package.
 
-The toolchain uses Node 22, exact `pyslang==12.0.0`, and the official digest-pinned OSS CAD
+The toolchain uses Node 26, exact `pyslang==12.0.0`, and the official digest-pinned OSS CAD
 Suite 2026-10-26. Icarus/vvp report the upstream bundled development identity
 `14.0 (devel) (s20260301-713-gf9111a949-dirty)`. Missing/wrong tools fail acceptance.
 The complete hash-locked Python closure supports Windows/Python 3.14 and
@@ -84,3 +84,13 @@ is claimed. Canonical system authority remains Lab-First v3.1 in
 Active modules are `cirnet_experiment_top` and `cirnet_instrument_scaffold`;
 legacy module wrappers preserve published consumer instantiations. `CIRNET_*`
 settings override `NETCIRCUIT_*`, with both names synchronized for pinned tools.
+
+## Node 26 LTS CI baseline (2026-11-05)
+
+Both checks in `tests/test_bootstrap_environment.py` pass with portable Node
+26.13.0 on PATH. actionlint 1.7.12 passes the workflow with
+`-shellcheck= -pyflakes=`. CI selects major 26 before allocator bootstrap. RTL, dependency
+locks and published artifacts are unchanged. RTL simulation, native/FPGA build,
+physical board verification and hosted Actions are NOT_RUN for this toolchain
+policy change. Raw evidence was inspected outside Git in the shared session
+owned by `cirnet-node26-compat-20261105`.
