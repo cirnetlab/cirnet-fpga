@@ -1,5 +1,9 @@
 name: FPGA source and RTL
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 env:
@@ -48,9 +52,10 @@ jobs:
       - name: Install pinned official RTL toolchain
         run: python -B scripts/install_toolchain.py
       - name: Mandatory parser, both-top compilation and actual safety behavior
-        run: |
-          python -B scripts/check_rtl.py
-          python -B -m pytest -q --basetemp "$CIRNET_ARTIFACTS_SESSION/pytest" --junitxml "$CIRNET_ARTIFACTS_SESSION/results.xml"
+        # The RTL test executes check_rtl.py and requires both behavioral markers.
+        run: python -B -m pytest -q --basetemp "$CIRNET_ARTIFACTS_SESSION/pytest" --junitxml "$CIRNET_ARTIFACTS_SESSION/results.xml"
+      - name: Record toolchain and both RTL results from the tested execution
+        run: cat "$CIRNET_ARTIFACTS_SESSION"/fpga-leaf-rtl-*/result.json
       - name: Build exact source artifact twice
         run: |
           python -B scripts/build_source.py --output "$CIRNET_ARTIFACTS_SESSION/cirnet-fpga-scaffold-0.1.2.tar.gz" --provenance integration/source-provenance.json
