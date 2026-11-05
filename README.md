@@ -1,17 +1,15 @@
 # CIRNET-FPGA
 
-Current repository: [CIRNETLAB/CIRNET-FPGA](https://github.com/CIRNETLAB/CIRNET-FPGA).
-Historical `TINIHI-Labs/net-Circuit-FPGA` provenance identifies this same
-repository before its rename.
+Current repository: [cirnetlab/cirnet-fpga](https://github.com/cirnetlab/cirnet-fpga).
 
 Independent Lab-First FPGA source/scaffold **0.1.1**. The portable controller,
 disabled future instrument interface preserve their Remote behavior. Canonical
 module names have thin legacy wrappers. The
 original testbench retains every assertion and holds reset through one clock
 edge before release, correcting simulator-dependent declaration initialization.
-Hardware drivers belong to [CIRNET-Hardware](https://github.com/CIRNETLAB/CIRNET-Hardware);
+Hardware drivers belong to [cirnet-hardware](https://github.com/cirnetlab/cirnet-hardware);
 system safety, orchestration and integrated acceptance belong to
-[CIRNET-Remote](https://github.com/CIRNETLAB/CIRNET-Remote).
+[cirnet-remote](https://github.com/cirnetlab/cirnet-remote).
 
 There is no board image, Python runtime package, transport decoder, switching
 matrix, electrical protection, topology scanner, ADC/DAC, SDRAM or CDC
@@ -68,10 +66,12 @@ from that inventory. No source sibling imports or canonical schema copies are
 required. Fresh exports must carry explicit provenance. The initial
 [provenance](integration/source-provenance.json) honestly records the uncommitted
 migration against both preserved baseline revisions.
-New builds record `https://github.com/CIRNETLAB/CIRNET-FPGA.git` as the current
-source repository while preserving the input's original repository/revision.
-The historical input file is never rewritten. Existing immutable
-[v0.1.1](https://github.com/CIRNETLAB/CIRNET-FPGA/releases/tag/v0.1.1) artifacts
+New builds record `https://github.com/cirnetlab/cirnet-fpga.git` as the source
+repository and `https://github.com/cirnetlab/cirnet-remote.git` as the original
+repository for the recorded original revision. Source inputs can still use the
+former capitalization or recorded pre-transfer URLs. The historical input file
+is never rewritten. Existing immutable
+[v0.1.1](https://github.com/cirnetlab/cirnet-fpga/releases/tag/v0.1.1) artifacts
 retain their old source/provenance and bytes; compare a fresh committed build
 before selecting it, rather than treating the version number as a byte identity.
 
@@ -79,7 +79,7 @@ Inspect external diagnostics before cleanup using the installed allocator's
 guarded session cleanup. Preserve LICENSE, original RTL/testbench, frozen source,
 historical evidence and Git ancestry. No board programming or physical rollback
 is claimed. Canonical system authority remains Lab-First v3.1 in
-[CIRNET-Remote architecture](https://github.com/CIRNETLAB/CIRNET-Remote/blob/master/docs/ARCHITECTURE.md).
+[CIRNET-Remote architecture](https://github.com/cirnetlab/cirnet-remote/blob/master/docs/ARCHITECTURE.md).
 
 Active modules are `cirnet_experiment_top` and `cirnet_instrument_scaffold`;
 legacy module wrappers preserve published consumer instantiations. `CIRNET_*`

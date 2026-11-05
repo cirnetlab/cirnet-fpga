@@ -33,9 +33,9 @@ def test_source_archive_rebuild_has_same_bytes_and_rejects_unsafe_input(tmp_path
         metadata = json.loads(archive.extractfile('fpga-artifact.json').read())
         assert metadata['name'] == 'cirnet-fpga-scaffold'
         source = metadata['source']
-    assert source['repository'] == 'https://github.com/CIRNETLAB/CIRNET-FPGA.git'
+    assert source['repository'] == 'https://github.com/cirnetlab/cirnet-fpga.git'
     historical = json.loads(historical_provenance)
-    assert source['originalRepository'] == historical['originalRepository']
+    assert source['originalRepository'] == 'https://github.com/cirnetlab/cirnet-remote.git'
     assert source['originalRevision'] == historical['originalRevision']
     assert provenance.read_bytes() == historical_provenance
     unrelated = tmp_path/'unrelated-provenance.json'
@@ -45,9 +45,33 @@ def test_source_archive_rebuild_has_same_bytes_and_rejects_unsafe_input(tmp_path
     assert result.returncode != 0, 'An unrelated repository must never be relabelled as CIRNET-FPGA'
     assert 'repository' in result.stderr.lower()
     assert not rejected.exists()
+    unrelated.write_text(json.dumps({**historical, 'originalRepository': 'https://github.com/unrelated/other.git'}))
+    result = run_script('build_source.py', '--output', rejected, '--provenance', unrelated)
+    assert result.returncode != 0, 'An unrelated original repository must never be relabelled as cirnet-remote'
+    assert 'original repository' in result.stderr.lower()
+    assert not rejected.exists()
     result = run_script('build_source.py','--output',ROOT/'forbidden.tar.gz','--provenance',provenance)
     assert result.returncode != 0
     assert not (ROOT/'forbidden.tar.gz').exists()
+
+
+@pytest.mark.parametrize(('repository', 'original_repository'), [
+    ('https://github.com/cirnetlab/cirnet-fpga.git', 'https://github.com/cirnetlab/cirnet-remote.git'),
+    ('https://github.com/CIRNETLAB/CIRNET-FPGA.git', 'https://github.com/TINIHI-Labs/net-Circuit-Remote.git'),
+    ('https://github.com/CirnetLab/Cirnet-Fpga', 'https://github.com/net-Circuit-Remote/net-Circuit-Remote'),
+])
+def test_source_archive_canonicalizes_repositories(tmp_path, repository, original_repository):
+    source = json.loads((ROOT/'integration/source-provenance.json').read_text(encoding='utf-8'))
+    provenance = tmp_path/'provenance.json'
+    provenance.write_text(json.dumps({**source, 'repository': repository, 'originalRepository': original_repository}), encoding='utf-8')
+    output = tmp_path/'source.tar.gz'
+    result = run_script('build_source.py', '--output', output, '--provenance', provenance)
+    assert result.returncode == 0, result.stdout+result.stderr
+    with tarfile.open(output, 'r:gz') as archive:
+        metadata = json.loads(archive.extractfile('fpga-artifact.json').read())
+    assert metadata['source']['repository'] == 'https://github.com/cirnetlab/cirnet-fpga.git'
+    assert metadata['source']['originalRepository'] == 'https://github.com/cirnetlab/cirnet-remote.git'
+    assert metadata['source']['originalRevision'] == source['originalRevision']
 
 
 def test_rtl_gate_rejects_missing_explicit_toolchain(tmp_path):
