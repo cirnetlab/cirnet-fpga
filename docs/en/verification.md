@@ -44,4 +44,4 @@ python -B scripts/build_source.py --output $archive --provenance integration/sou
 
 The archive contains a deterministic inventory and `fpga-artifact.json` provenance. Compare two builds from identical inputs. For release, use the actual clean commit and record its SHA256. The published `v0.1.1` archive keeps its original identity. Inspect diagnostics before using the allocator’s guarded cleanup for your session.
 
-The [CI workflow](../../.github/workflows/fpga.yml) runs the Linux gate. The [dated results](../archive/2026-11-05-fpga-verification.md#2026-11-05-fpga-012-candidate) describe the tested candidate and its limits. Software verification establishes abstract control behavior. Board programming, pinout, timing closure and electrical qualification remain separate.
+The [CI workflow](../../.github/workflows/fpga.yml) runs the Linux gate. The [dated results](history/verification/2026-11-05-fpga-verification.md#2026-11-05-fpga-012-candidate) describe the tested candidate and its limits. Software verification establishes abstract control behavior. Board programming, pinout, timing closure and electrical qualification remain separate.

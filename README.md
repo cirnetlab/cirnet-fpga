@@ -14,4 +14,4 @@ CIRNET Remote owns the [canonical Lab-First architecture](https://github.com/cir
 <a id="node-26-lts-ci-baseline-2026-11-05"></a>
 <a id="python-314-ci-baseline-2026-11-05"></a>
 
-[Dated FPGA verification records](docs/archive/2026-11-05-fpga-verification.md)
+[Dated FPGA verification records](docs/en/history/verification/2026-11-05-fpga-verification.md)

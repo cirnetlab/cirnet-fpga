@@ -2,7 +2,7 @@
 
 [Dated sections in the original README](https://github.com/cirnetlab/cirnet-fpga/blob/497aded7f8dcd5f7071c128cb44cc5842120d450/README.md#2026-11-05-fpga-012-candidate)
 
-These sections preserve the recorded candidate and toolchain checks. See the [current verification guide](../en/verification.md) or its [Vietnamese counterpart](../vi/verification.md) for current commands.
+These sections preserve the recorded candidate and toolchain checks. See the [current verification guide](../../verification.md) or its [Vietnamese counterpart](../../../vi/verification.md) for current commands.
 
 ## 2026-11-05 FPGA 0.1.2 candidate
 
