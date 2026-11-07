@@ -2,7 +2,7 @@
 
 [English](../en/index.md) · [README của repository](../../README.md)
 
-Codex và các agent lập trình bắt đầu từ [mục lục tiếng Anh](../en/index.md).
+Codex và các agent lập trình bắt đầu từ [mục lục tiếng Anh](../en/index.md) và tuân theo [quy định của kho](../../fpga/AGENTS.md).
 
 ## Hướng dẫn
 
@@ -16,6 +16,11 @@ Codex và các agent lập trình bắt đầu từ [mục lục tiếng Anh](..
 ## Kiểm chứng
 
 - [Kiểm chứng](verification.md) hướng dẫn chọn công cụ đã ghim, chạy mô phỏng RTL thật và dựng gói mã nguồn.
+
+## Đóng góp và phát hành
+
+- [Quy ước viết tài liệu](contributing/writing-documentation.md) hướng dẫn cập nhật song ngữ, quản lý hồ sơ công việc và bảo toàn bằng chứng.
+- [Nhật ký phát hành](../changelogs/README.md) liệt kê các gói mã nguồn FPGA đã phát hành và thay đổi kể từ bản phát hành mới nhất.
 
 ## Lịch sử
 

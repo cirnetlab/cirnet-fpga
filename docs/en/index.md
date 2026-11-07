@@ -2,7 +2,7 @@
 
 [Tiếng Việt](../vi/index.md) · [Repository README](../../README.md)
 
-Start with this English index when reading the repository with Codex or another coding agent.
+Start with this English index when reading the repository with Codex or another coding agent. Follow the [repository policy](../../fpga/AGENTS.md).
 
 ## Guides
 
@@ -16,6 +16,11 @@ Start with this English index when reading the repository with Codex or another 
 ## Verification
 
 - [Verification](verification.md) covers the pinned toolchain, actual RTL simulation and source builds.
+
+## Contributing and releases
+
+- [Documentation conventions](contributing/writing-documentation.md) explain bilingual edits, task records and evidence preservation.
+- [Release changelogs](../changelogs/README.md) list published FPGA source archives and changes since the latest release.
 
 ## History
 

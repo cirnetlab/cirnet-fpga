@@ -2,6 +2,8 @@
 
 [English documentation](docs/en/index.md) · [Tài liệu tiếng Việt](docs/vi/index.md)
 
+[Repository policy](fpga/AGENTS.md) · [Release changelogs](docs/changelogs/README.md)
+
 CIRNET FPGA provides the RTL source scaffold and simulation tests for Lab-First control. The source targets scaffold 0.1.2. Board programming and physical firmware require a separate hardware design.
 
 - [Get started](docs/en/getting-started.md) with the source artifact and its version domains.

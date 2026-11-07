@@ -1,14 +1,9 @@
 # FPGA scaffold verification
 
-Separate from application VirtualHardwareStation/event simulation. Current
-standalone acceptance uses the complete hash-locked Python closure and pinned
-official OSS CAD Suite described in the [product guide](../../README.md).
-
-After exact DEV allocator/Contracts installation, allocate and inherit the
-canonical external session/context. Run `python -B scripts/install_toolchain.py
---archive ABSOLUTE_PINNED_ARCHIVE` or its pinned download mode. Then run
-`python -B scripts/check_rtl.py --toolchain-root ABSOLUTE_OWNED_TOOL_ROOT` and
-`python -B -m pytest -q --basetemp ABSOLUTE_OWNED_SESSION/pytest` from the product.
+The benches exercise the RTL scaffold independently of the application’s
+VirtualHardwareStation event simulation. Use the [English verification guide](../../docs/en/verification.md)
+or [Vietnamese verification guide](../../docs/vi/verification.md) for the pinned
+toolchain and clean-export procedure. The pytest gate invokes the RTL check.
 Missing or incorrect slang/compiler/runtime is a failure; no optional skip,
 unversioned PATH fallback or hardcoded temporary output is permitted.
 
