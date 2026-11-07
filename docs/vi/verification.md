@@ -28,9 +28,10 @@ python -B scripts/install_contracts.py --manifest $env:CIRNET_CONTRACTS_ARTIFACT
 python -B -m pip check
 $tool = python -B scripts/install_toolchain.py --archive C:/absolute/oss-cad-suite-archive
 $env:CIRNET_FPGA_TOOLCHAIN_ROOT = ($tool -join [Environment]::NewLine | ConvertFrom-Json).root
-python -B scripts/check_rtl.py --toolchain-root $env:CIRNET_FPGA_TOOLCHAIN_ROOT
 python -B -m pytest -q --basetemp (Join-Path $bootstrap.session 'pytest')
 ~~~
+
+Cổng pytest gọi `scripts/check_rtl.py` và kiểm tra kết quả. Để chạy riêng bước RTL, dùng `python -B scripts/check_rtl.py --toolchain-root $env:CIRNET_FPGA_TOOLCHAIN_ROOT`.
 
 Cả `LAB_FIRST_RTL_PASS` và `PERMIT_MATRIX_RTL_PASS` phải đến từ lần chạy mô phỏng thật. Cổng kiểm chứng xác thực đầy đủ tệp thực thi và phụ thuộc của bộ công cụ, đồng thời kiểm tra cả hai mô-đun cấp cao. Công cụ thiếu hoặc sai phiên bản làm cổng kiểm chứng thất bại. Chỉ biên dịch, phân tích cú pháp hay triển khai cấu trúc RTL chưa đủ để xác nhận hành vi. Bộ kiểm thử gốc và ma trận điều kiện bao quát reset, mất điều kiện cho phép, lỗi và watchdog, dừng an toàn và thiết bị đo chưa khả dụng. Xem [hướng dẫn testbench](../../fpga/simulation/README.md).
 
@@ -43,4 +44,4 @@ python -B scripts/build_source.py --output $archive --provenance integration/sou
 
 Gói chứa danh mục tệp có thể tái lập và nguồn gốc trong `fpga-artifact.json`. So sánh hai lần dựng từ đầu vào giống hệt nhau. Khi phát hành, dùng commit sạch thực tế và ghi mã SHA256. Gói `v0.1.1` đã công bố giữ nguyên định danh ban đầu. Kiểm tra dữ liệu chẩn đoán trước khi dùng cơ chế dọn dẹp có kiểm tra quyền sở hữu phiên của bộ cấp phát.
 
-[Quy trình CI](../../.github/workflows/fpga.yml) chạy cổng kiểm chứng Linux. [Kết quả theo ngày](../../README.md#2026-11-05-fpga-012-candidate) ghi nhận bản dựng đã thử và giới hạn của phép kiểm tra. Kiểm chứng phần mềm xác nhận hành vi điều khiển trừu tượng. Nạp cấu hình bo mạch, phân chân, xác nhận đáp ứng thời gian và đánh giá điện cần kiểm tra riêng.
+[Quy trình CI](../../.github/workflows/fpga.yml) chạy cổng kiểm chứng Linux. [Kết quả theo ngày](../archive/2026-11-05-fpga-verification.md#2026-11-05-fpga-012-candidate) ghi nhận bản dựng đã thử và giới hạn của phép kiểm tra. Kiểm chứng phần mềm xác nhận hành vi điều khiển trừu tượng. Nạp cấu hình bo mạch, phân chân, xác nhận đáp ứng thời gian và đánh giá điện cần kiểm tra riêng.

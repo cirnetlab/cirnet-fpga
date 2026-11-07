@@ -4,6 +4,8 @@ English · [Tiếng Việt](../vi/scaffold.md)
 
 [Documentation index](index.md)
 
+CIRNET Remote defines the [canonical Lab-First architecture](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/ARCHITECTURE.md). The [system guide](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/en/architecture/system.md) explains system safety and orchestration. The Hardware Service owns the station driver and private transport.
+
 The EP4CE6E22C8N prototype target has no external SDRAM. In simulation, the controller moves through SAFE → SCANNING → SCANNED → PREPARED → ROUTED → POWERED → ARMED → RUNNING. A successful scan indicates readiness of the observation step. Electrical safety and topology correctness remain separate checks.
 
 Reset enters SAFE with drive, routing and experiment clock disabled. The simulated controller requires a safe plan, route readiness, protection and an armed watchdog before enabling drive. These permits remain live. A fault or watchdog assertion immediately inhibits outputs and latches FAULT. Reset after clearance invalidates the old scan and plan. The experiment clock uses abstract control ticks. See the [controller specification](../../fpga/experiment-controller/README.md).

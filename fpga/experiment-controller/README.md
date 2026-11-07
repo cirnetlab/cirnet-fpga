@@ -1,6 +1,8 @@
 # Lab-First Experiment Controller
 
-EP4CE6E22C8N prototype, **no external SDRAM**; future EP4CE10E22C8N instrument target. Canonical authority: [Remote Lab-First architecture](https://github.com/cirnetlab/cirnet-remote/blob/master/docs/ARCHITECTURE.md).
+[Scaffold guide](../../docs/en/scaffold.md) · [Hướng dẫn khung RTL](../../docs/vi/scaffold.md)
+
+EP4CE6E22C8N prototype, **no external SDRAM**; future EP4CE10E22C8N instrument target. Canonical authority: [Remote Lab-First architecture](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/ARCHITECTURE.md).
 
 Current rtl/top.v is a compile-safe **control scaffold / electrical integration placeholder**. Mini PC uses Hardware Service FpgaTransport, with Serial/USB-SPI adapters unavailable until actual hardware is selected. No physical transport decoder, topology measurement, switching matrix or protection circuit exists here.
 

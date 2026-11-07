@@ -6,6 +6,8 @@
 
 Mã nguồn hiện tại dựng artifact mã nguồn `cirnet-fpga-scaffold-0.1.2.tar.gz`. Hai mô-đun chính là `cirnet_experiment_top` và `cirnet_instrument_scaffold`. Các mô-đun bọc tương thích chuyển tiếp tới hai mô-đun này. Gói mã nguồn chứa RTL, kiểm thử, tập lệnh và danh mục tệp để kiểm tra nguồn gốc.
 
+[Khóa phát hành hệ thống 0.1.4](https://github.com/cirnetlab/cirnet-remote/blob/38aea6120920f48cea817827ac2277cce4bef25e/integration/release-set.json) chọn gói mã nguồn v0.1.2 đã phát hành từ `d27c818aca0eb95e9ee8d9b5ba6bda3182909914` theo mã băm. Checkout hiện tại có thể dựng cùng phiên bản mã nguồn từ commit sau. [Kiểm chứng Windows theo ngày](../archive/2026-11-05-fpga-verification.md) ghi lại ứng viên trước đó và phạm vi kiểm tra. [Gói v0.1.1 đã phát hành](https://github.com/cirnetlab/cirnet-fpga/releases/tag/v0.1.1) giữ nguồn gốc đã ghi.
+
 | Miền phiên bản | Giá trị hiện tại |
 | --- | --- |
 | Artifact mã nguồn FPGA | `0.1.2` |

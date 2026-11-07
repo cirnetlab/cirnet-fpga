@@ -4,6 +4,8 @@
 
 [Mục lục tài liệu](index.md)
 
+CIRNET Remote định nghĩa [kiến trúc Lab-First chuẩn](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/ARCHITECTURE.md). [Hướng dẫn hệ thống](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/vi/architecture/system.md) mô tả an toàn và điều phối hệ thống. Hardware Service quản lý trình điều khiển trạm và lớp truyền tải riêng.
+
 Mẫu thử hướng tới EP4CE6E22C8N không có SDRAM ngoài. Trong mô phỏng, bộ điều khiển đi qua SAFE → SCANNING → SCANNED → PREPARED → ROUTED → POWERED → ARMED → RUNNING. Quét thành công cho biết bước quan sát đã sẵn sàng. An toàn điện và tính đúng của tô pô vẫn được kiểm tra riêng.
 
 Reset đưa bộ điều khiển về SAFE và tắt điều khiển đầu ra, định tuyến, xung nhịp thí nghiệm. Trước khi cho phép điều khiển đầu ra, bộ điều khiển mô phỏng yêu cầu kế hoạch an toàn, định tuyến sẵn sàng, bảo vệ độc lập và watchdog đã kích hoạt. Các điều kiện này tiếp tục được kiểm tra trong khi chạy. Tín hiệu lỗi hoặc watchdog chặn đầu ra ngay và giữ trạng thái FAULT. Reset sau khi hết lỗi vô hiệu hóa kết quả quét và kế hoạch cũ. Xung nhịp thí nghiệm tính theo nhịp điều khiển trừu tượng. Xem [đặc tả bộ điều khiển](../../fpga/experiment-controller/README.md).

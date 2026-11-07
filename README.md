@@ -1,126 +1,17 @@
-# CIRNET-FPGA
+# CIRNET FPGA
 
 [English documentation](docs/en/index.md) · [Tài liệu tiếng Việt](docs/vi/index.md)
 
-Current repository: [cirnetlab/cirnet-fpga](https://github.com/cirnetlab/cirnet-fpga).
+CIRNET FPGA provides the RTL source scaffold and simulation tests for Lab-First control. The source targets scaffold 0.1.2. Board programming and physical firmware require a separate hardware design.
 
-Independent Lab-First FPGA source/scaffold **0.1.2**. The portable controller,
-disabled future instrument interface preserve their Remote behavior. Canonical
-module names have thin legacy wrappers. The
-original testbench retains every assertion and holds reset through one clock
-edge before release, correcting simulator-dependent declaration initialization.
-Hardware drivers belong to [cirnet-hardware](https://github.com/cirnetlab/cirnet-hardware);
-system safety, orchestration and integrated acceptance belong to
-[cirnet-remote](https://github.com/cirnetlab/cirnet-remote).
+- [Get started](docs/en/getting-started.md) with the source artifact and its version domains.
+- [Read the scaffold guide](docs/en/scaffold.md) for the controller and reserved instrument interfaces.
+- [Verify the RTL and source archive](docs/en/verification.md) with the pinned toolchain.
 
-There is no board image, Python runtime package, transport decoder, switching
-matrix, electrical protection, topology scanner, ADC/DAC, SDRAM or CDC
-implementation. Pinout, Quartus synthesis/timing and electrical measurements
-remain **TBD_BY_HARDWARE_DESIGN**. Software/RTL results cannot close OPEN-ABI,
-OPEN-FRESHNESS or OPEN-HARDWARE.
+CIRNET Remote owns the [canonical Lab-First architecture](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/ARCHITECTURE.md) and selects the published FPGA source archive in the [system 0.1.4 release lock](https://github.com/cirnetlab/cirnet-remote/blob/38aea6120920f48cea817827ac2277cce4bef25e/integration/release-set.json).
 
-Version domains are independent: Contracts **0.1.2**, logical control
-**1.0-scaffold**, reserved register map **1.0-reserved**, physical firmware and
-protocol **UNAVAILABLE**. B12 is explicitly resolved: Contracts' preserved
-unavailable design-target example says `2.0-scaffold`; that illustrative label
-is rejected by the executable logical schema. It is never rewritten or treated
-as supported firmware.
+<a id="2026-11-05-fpga-012-candidate"></a>
+<a id="node-26-lts-ci-baseline-2026-11-05"></a>
+<a id="python-314-ci-baseline-2026-11-05"></a>
 
-Verification selects the exact `cirnet-contracts==0.1.2` wheel by SHA-256
-and uses the independently pinned DEV allocator. The Python import remains
-`contracts`. Verify historical selections in separate environments because
-the former distribution owns the same import package.
-
-The toolchain uses Node 26, exact `pyslang==12.0.0`, and the official digest-pinned OSS CAD
-Suite 2026-10-26. Icarus/vvp report the upstream bundled development identity
-`14.0 (devel) (s20260301-713-gf9111a949-dirty)`. Missing/wrong tools fail acceptance.
-The complete hash-locked Python closure supports Windows/Python 3.14 and
-Linux/Python 3.14 in current CI; hosted Linux execution is separate evidence.
-
-Bootstrap a private environment with `python -B scripts/bootstrap_contract_tools.py
---manifest ABSOLUTE_CONTRACTS_MANIFEST` (or exact DEV URL/SHA environment
-selectors). This allocates the first external session before writing diagnostics.
-Keep the emitted session/context and direct `TEMP`, `TMP`, `TMPDIR`, pip cache,
-pytest basetemp and all logs into that session. Download
-`requirements-verification.lock` with `--require-hashes --only-binary=:all:`
-into its external wheelhouse, then install with `--no-index --find-links
-ABSOLUTE_WHEELHOUSE --require-hashes --only-binary=:all:`. Install the selected
-Contracts wheel with `python -B scripts/install_contracts.py --manifest
-ABSOLUTE_CONTRACTS_MANIFEST`; run `python -B -m pip check`.
-
-Run `python -B scripts/install_toolchain.py --archive ABSOLUTE_PINNED_ARCHIVE`,
-or omit `--archive` to download the pinned official release. It extracts a fresh
-owned tool root and writes archive/binary/version provenance there; CI receives
-`CIRNET_FPGA_TOOLCHAIN_ROOT`. Set that variable locally to the printed root.
-Run `python -B scripts/check_rtl.py --toolchain-root ABSOLUTE_OWNED_ROOT` and
-`python -B -m pytest --basetemp ABSOLUTE_OWNED_SESSION/pytest`. There are no
-optional parser/compiler/simulation skips or PATH fallback. Both original and
-supplemental testbenches must emit their PASS markers. Immediate drive inhibit
-and synchronous FAULT/routing cleanup are distinct abstract simulation checks.
-
-Build with `python -B scripts/build_source.py --output
-ABSOLUTE_OWNED_SESSION/cirnet-fpga-scaffold-0.1.2.tar.gz --provenance
-ABSOLUTE_SOURCE_PROVENANCE_JSON`. The source archive has deterministic metadata,
-an exact file/SHA256 inventory and `fpga-artifact.json` at its root. Source
-fingerprint is SHA256 of sorted `sha256  path` LF lines; identity excludes itself
-from that inventory. No source sibling imports or canonical schema copies are
-required. Fresh exports must carry explicit provenance. The initial
-[provenance](integration/source-provenance.json) honestly records the uncommitted
-migration against both preserved baseline revisions.
-New builds record `https://github.com/cirnetlab/cirnet-fpga.git` as the source
-repository and `https://github.com/cirnetlab/cirnet-remote.git` as the original
-repository for the recorded original revision. The tracked provenance records
-the migration baseline revisions and dirty state. Release builds use the
-actual release commit and a clean source export. Existing immutable
-[v0.1.1](https://github.com/cirnetlab/cirnet-fpga/releases/tag/v0.1.1) artifacts
-retain their source provenance and bytes. Verify a fresh committed build before
-selecting the v0.1.2 candidate. The release name is `cirnet-fpga-v0.1.2` and
-the tag is `v0.1.2`.
-
-Inspect external diagnostics before cleanup using the installed allocator's
-guarded session cleanup. Preserve LICENSE, original RTL/testbench, frozen source,
-historical evidence and Git ancestry. No board programming or physical rollback
-is claimed. Canonical system authority remains Lab-First v3.1 in
-[CIRNET-Remote architecture](https://github.com/cirnetlab/cirnet-remote/blob/master/docs/ARCHITECTURE.md).
-
-Active modules are `cirnet_experiment_top` and `cirnet_instrument_scaffold`;
-legacy module wrappers preserve published consumer instantiations. `CIRNET_*`
-settings override `NETCIRCUIT_*`, with both names synchronized for pinned tools.
-
-## 2026-11-05 FPGA 0.1.2 candidate
-
-Native Windows verification at UTC+07:00 used an external export of the
-uncommitted candidate based on `f02a928802c48644ab8ff79226970e8bec66ffc4`,
-CPython 3.14.4, the exact canonical Contracts 0.1.2 wheel, pyslang 12.0.0,
-and the SHA256-pinned OSS CAD Suite. Both top modules compiled, and the two
-testbenches reported `LAB_FIRST_RTL_PASS` and `PERMIT_MATRIX_RTL_PASS`.
-All 31 pytest cases passed after the bootstrap fixture restored both
-allocator environment prefixes. Actionlint 1.7.12 passed the workflow.
-Raw output used the external session owned by `cirnet-release-014-20261105`.
-The RTL report SHA256 is
-`dfc65d2528f4a3bc4e357d4092cd248cf585d38127302c2e39d1cec463afdac0`
-and the pytest log SHA256 is
-`a3eb13f3cbb36097cbaba08d6365ad552456db095c5d870d10e5259a40299f40`.
-The release archive requires the actual committed revision. These software
-tests cover the scaffold and abstract control behavior.
-
-## Node 26 LTS CI baseline (2026-11-05)
-
-Both checks in `tests/test_bootstrap_environment.py` pass with portable Node
-26.13.0 on PATH. actionlint 1.7.12 passes the workflow with
-`-shellcheck= -pyflakes=`. CI selects major 26 before allocator bootstrap. RTL, dependency
-locks and published artifacts are unchanged. RTL simulation, native/FPGA build,
-physical board verification and hosted Actions are NOT_RUN for this toolchain
-policy change. Raw evidence was inspected outside Git in the shared session
-owned by `cirnet-node26-compat-20261105`.
-
-## Python 3.14 CI baseline (2026-11-05)
-
-Primary CI selects Python 3.14. All three bootstrap/toolchain selection checks
-pass, and the existing binary-only hash closure verifies for CPython 3.14
-Windows AMD64 and glibc Linux x86_64 without changing versions or hashes.
-actionlint 1.7.12 passes the workflow. RTL, protocol, immutable artifacts and
-historical evidence are unchanged. Native RTL simulation, synthesis, board
-programming, hosted Actions and publication are NOT_RUN for this toolchain
-upgrade. Raw diagnostics are external under the session owned by
-`cirnet-python314-compat-20261105`.
+[Dated FPGA verification records](docs/archive/2026-11-05-fpga-verification.md)

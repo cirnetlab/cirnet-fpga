@@ -28,9 +28,10 @@ python -B scripts/install_contracts.py --manifest $env:CIRNET_CONTRACTS_ARTIFACT
 python -B -m pip check
 $tool = python -B scripts/install_toolchain.py --archive C:/absolute/oss-cad-suite-archive
 $env:CIRNET_FPGA_TOOLCHAIN_ROOT = ($tool -join [Environment]::NewLine | ConvertFrom-Json).root
-python -B scripts/check_rtl.py --toolchain-root $env:CIRNET_FPGA_TOOLCHAIN_ROOT
 python -B -m pytest -q --basetemp (Join-Path $bootstrap.session 'pytest')
 ~~~
+
+The pytest gate invokes `scripts/check_rtl.py` and checks its results. To run the RTL check by itself, use `python -B scripts/check_rtl.py --toolchain-root $env:CIRNET_FPGA_TOOLCHAIN_ROOT`.
 
 Both `LAB_FIRST_RTL_PASS` and `PERMIT_MATRIX_RTL_PASS` must come from actual simulation. The gate authenticates the toolchain execution closure and checks both tops. An unavailable or incorrect tool fails the gate. Compilation, parsing and elaboration alone cannot establish the behavioral result. The original bench and the permit matrix cover reset, lost permits, fault and watchdog behavior, safe stop and unavailable instruments. See the [bench guide](../../fpga/simulation/README.md).
 
@@ -43,4 +44,4 @@ python -B scripts/build_source.py --output $archive --provenance integration/sou
 
 The archive contains a deterministic inventory and `fpga-artifact.json` provenance. Compare two builds from identical inputs. For release, use the actual clean commit and record its SHA256. The published `v0.1.1` archive keeps its original identity. Inspect diagnostics before using the allocator’s guarded cleanup for your session.
 
-The [CI workflow](../../.github/workflows/fpga.yml) runs the Linux gate. The [dated results](../../README.md#2026-11-05-fpga-012-candidate) describe the tested candidate and its limits. Software verification establishes abstract control behavior. Board programming, pinout, timing closure and electrical qualification remain separate.
+The [CI workflow](../../.github/workflows/fpga.yml) runs the Linux gate. The [dated results](../archive/2026-11-05-fpga-verification.md#2026-11-05-fpga-012-candidate) describe the tested candidate and its limits. Software verification establishes abstract control behavior. Board programming, pinout, timing closure and electrical qualification remain separate.

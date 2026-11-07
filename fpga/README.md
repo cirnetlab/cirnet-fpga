@@ -1,6 +1,8 @@
 # Lab-First FPGA workspace
 
-Canonical authority: [Remote Lab-First architecture](https://github.com/cirnetlab/cirnet-remote/blob/master/docs/ARCHITECTURE.md). Mini PC host boundary is FpgaTransport (serial/USB-SPI, future USB3/Ethernet), with transport-independent protocol.
+[Scaffold guide](../docs/en/scaffold.md) · [Hướng dẫn khung RTL](../docs/vi/scaffold.md)
+
+Canonical authority: [Remote Lab-First architecture](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/ARCHITECTURE.md). Mini PC host boundary is FpgaTransport (serial/USB-SPI, future USB3/Ethernet), with transport-independent protocol.
 
 EP4CE6E22C8N prototype has no external SDRAM. R7 aligns compile-safe reset/safe-state, protocol/control, topology scan, protected drive, routing, experiment clock and fault interlock.
 
