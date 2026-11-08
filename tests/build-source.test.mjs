@@ -46,7 +46,7 @@ test('builds a deterministic candidate with a complete source-only inventory', (
   assert.equal(metadata.status, 0, metadata.stderr)
   const identity = JSON.parse(metadata.stdout)
   assert.equal(identity.name, 'cirnet-fpga-scaffold')
-  assert.equal(identity.version, '0.1.2')
+  assert.equal(identity.version, '0.2.2')
   assert.equal(identity.contractsVersion, '0.1.2')
   assert.equal(identity.logicalProtocolVersion, '1.0-scaffold')
   assert.equal(identity.registerMapVersion, '1.0-reserved')

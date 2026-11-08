@@ -4,13 +4,13 @@
 
 [Mục lục tài liệu](index.md)
 
-Mã nguồn hiện tại dùng Node để dựng ứng viên `cirnet-fpga-scaffold-0.1.2-native-source.tar.gz`. Hai mô-đun chính là `cirnet_experiment_top` và `cirnet_instrument_scaffold`. Các mô-đun bọc tương thích chuyển tiếp tới hai mô-đun này. Gói ứng viên chứa RTL, hai testbench HDL, tài liệu và danh mục tệp theo SHA-256. Công cụ kiểm thử Python nằm trong kho mã dùng để kiểm chứng. [Đóng gói mã nguồn](verification.md#dựng-ứng-viên-mã-nguồn-native)
+Mã nguồn hiện tại dùng Node để dựng ứng viên `cirnet-fpga-scaffold-0.2.2-native-source.tar.gz`. Dùng các mô-đun RTL `cirnet_experiment_top` và `cirnet_instrument_scaffold`. Gói ứng viên chứa RTL, hai testbench HDL, tài liệu và danh mục tệp theo SHA-256. Công cụ kiểm thử Python nằm trong kho mã dùng để kiểm chứng. [Đóng gói mã nguồn](verification.md#dựng-ứng-viên-mã-nguồn-native)
 
-[Khóa phát hành hệ thống 0.1.4](https://github.com/cirnetlab/cirnet-remote/blob/38aea6120920f48cea817827ac2277cce4bef25e/integration/release-set.json) chọn gói mã nguồn v0.1.2 đã phát hành từ `d27c818aca0eb95e9ee8d9b5ba6bda3182909914` theo mã băm. Các revision sau có thể dựng cùng phiên bản. [Hồ sơ kiểm chứng Windows](../en/history/verification/2026-11-05-fpga-verification.md) ghi rõ ứng viên và phạm vi kiểm thử. [Gói v0.1.1 đã phát hành](https://github.com/cirnetlab/cirnet-fpga/releases/tag/v0.1.1) giữ nguyên nguồn gốc đã ghi.
+[Khóa phát hành hệ thống 0.1.4](https://github.com/cirnetlab/cirnet-remote/blob/38aea6120920f48cea817827ac2277cce4bef25e/integration/release-set.json) chọn gói mã nguồn v0.1.2 đã phát hành từ `d27c818aca0eb95e9ee8d9b5ba6bda3182909914` theo mã băm. [Hồ sơ kiểm chứng Windows](../en/history/verification/2026-11-05-fpga-verification.md) ghi rõ ứng viên và phạm vi kiểm thử. [Gói v0.1.1 đã phát hành](https://github.com/cirnetlab/cirnet-fpga/releases/tag/v0.1.1) giữ nguyên nguồn gốc đã ghi.
 
 | Miền phiên bản | Giá trị hiện tại |
 | --- | --- |
-| Artifact mã nguồn FPGA | `0.1.2` |
+| Ứng viên mã nguồn FPGA | `0.2.2` |
 | Wheel Contracts dùng để kiểm chứng | `cirnet-contracts==0.1.2` |
 | Bao lệnh điều khiển logic | `1.0-scaffold` |
 | Bản đồ thanh ghi dự kiến | `1.0-reserved` |

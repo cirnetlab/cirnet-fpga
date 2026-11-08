@@ -11,7 +11,7 @@ Dùng Node 26 và Git. Trích mô-đun bộ cấp phát từ gói DEV npm trong 
 ~~~powershell
 $env:CIRNET_ARTIFACTS_SESSION = node $env:CIRNET_ARTIFACTS_CLI
 node --test tests/build-source.test.mjs
-node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.1.2-native-source.tar.gz')
+node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.2.2-native-source.tar.gz')
 ~~~
 
 Chạy từ checkout FPGA. Với bản xuất mã nguồn, dùng ngữ cảnh bộ cấp phát của checkout gốc và `--provenance` ghi đúng revision cùng trạng thái thay đổi. Biên nhận ghi SHA-256 của gói, revision, trạng thái thay đổi và phiên bản Node/zlib. Gói chỉ chứa khung mã nguồn với định danh giao thức logic và bản đồ thanh ghi hiện có. CI đóng gói ứng viên trong job Windows riêng. Khóa phát hành hiện hành tiếp tục xác định gói lịch sử.
@@ -24,7 +24,7 @@ Dùng môi trường mới nằm ngoài mọi bản sao kho mã. CI RTL hiện t
 
 Bắt đầu trong PowerShell 7 tại checkout FPGA. Thay chỗ giữ chỗ cho manifest và tệp nén bằng đường dẫn tuyệt đối đã rà soát. Khi bỏ `--archive`, trình cài đặt tải bản đã ghim.
 
-Bộ pytest giữ các ca dựng gói Python trước đây. Trình đóng gói tham chiếu đối chiếu mọi mục ở gốc checkout với danh sách đầu vào, kể cả các mục Git bỏ qua như `.superpowers/`. Khởi tạo từ checkout để giữ ngữ cảnh Git, sau đó chạy pytest từ bản xuất sạch của commit đã rà soát trong phiên do mình sở hữu. Bản xuất chỉ chứa các tệp đã commit. Ghi riêng đầu vào khi dùng kết quả kiểm chứng cho ứng viên có thay đổi chưa commit.
+Khởi tạo từ checkout để giữ ngữ cảnh Git, sau đó chạy pytest từ bản xuất sạch của commit đã rà soát trong phiên do mình sở hữu. Bản xuất chỉ chứa các tệp đã commit. Ghi riêng đầu vào khi dùng kết quả kiểm chứng cho ứng viên có thay đổi chưa commit.
 
 Chạy các lệnh theo thứ tự và dừng khi có lỗi đầu tiên.
 

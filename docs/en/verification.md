@@ -11,7 +11,7 @@ Use Node 26 and Git. Extract the allocator module from the DEV npm archive pinne
 ~~~powershell
 $env:CIRNET_ARTIFACTS_SESSION = node $env:CIRNET_ARTIFACTS_CLI
 node --test tests/build-source.test.mjs
-node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.1.2-native-source.tar.gz')
+node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.2.2-native-source.tar.gz')
 ~~~
 
 Run from the FPGA checkout. For a source export, supply the allocator context of the originating checkout and use `--provenance` with the exact exported revision and migration state. The receipt records the archive SHA-256, revision, dirty state and Node/zlib versions. The archive includes only the source scaffold, with the existing logical and register-map identities. CI packages this candidate in a separate Windows job. The published release lock remains authoritative for the historical archive.
@@ -24,7 +24,7 @@ Use a fresh environment outside all checkouts. Current RTL CI uses Node 26 and P
 
 Start in the FPGA checkout in PowerShell 7. Replace the manifest and archive placeholders with reviewed absolute paths. Omitting `--archive` uses the installer’s pinned download.
 
-The pytest suite retains legacy Python archive tests. That reference packager checks every checkout-root entry against its input list, including ignored entries such as `.superpowers/`. Bootstrap from the checkout to retain its Git context, then run pytest from a clean export of the reviewed commit in the owned session. The export contains committed files only. Treat results for uncommitted edits as candidate evidence with its own recorded inputs.
+Bootstrap from the checkout to retain its Git context, then run pytest from a clean export of the reviewed commit in the owned session. The export contains committed files only. Treat results for uncommitted edits as candidate evidence with its own recorded inputs.
 
 Run the commands in order and stop at the first failure.
 

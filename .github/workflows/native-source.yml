@@ -43,14 +43,16 @@ jobs:
         run: |
           node --test tests/build-source.test.mjs
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.1.2-native-source.tar.gz') |
+          $archive = "cirnet-fpga-scaffold-$((Get-Content -Raw VERSION).Trim())-native-source.tar.gz"
+          "FPGA_SOURCE_ARCHIVE=$archive" >> $env:GITHUB_ENV
+          node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION $archive) |
             Tee-Object -FilePath (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'fpga-source-receipt.json')
           exit $LASTEXITCODE
       - uses: actions/upload-artifact@v4
         with:
           name: cirnet-fpga-native-source-candidate
           path: |
-            ${{ env.CIRNET_ARTIFACTS_SESSION }}/cirnet-fpga-scaffold-0.1.2-native-source.tar.gz
+            ${{ env.CIRNET_ARTIFACTS_SESSION }}/${{ env.FPGA_SOURCE_ARCHIVE }}
             ${{ env.CIRNET_ARTIFACTS_SESSION }}/fpga-source-receipt.json
       - name: Clean only this owned session
         if: always() && env.CIRNET_ARTIFACTS_SESSION != ''

@@ -23,36 +23,3 @@ module cirnet_instrument_scaffold (
     assign generator_output_enable = 1'b0;
     assign sdram_request = 1'b0;
 endmodule
-
-// Compatibility alias for published scaffold consumers.
-module netcircuit_instrument_scaffold (
-    input wire control_clk,
-    input wire acquisition_clk,
-    input wire generator_clk,
-    input wire sdram_clk,
-    input wire reset_n,
-    input wire capture_request,
-    input wire generator_request,
-    output wire logic_analyzer_available,
-    output wire scope_2ch_available,
-    output wire generator_2ch_available,
-    output wire capture_valid,
-    output wire generator_output_enable,
-    output wire sdram_request
-);
-    cirnet_instrument_scaffold implementation (
-        .control_clk(control_clk),
-        .acquisition_clk(acquisition_clk),
-        .generator_clk(generator_clk),
-        .sdram_clk(sdram_clk),
-        .reset_n(reset_n),
-        .capture_request(capture_request),
-        .generator_request(generator_request),
-        .logic_analyzer_available(logic_analyzer_available),
-        .scope_2ch_available(scope_2ch_available),
-        .generator_2ch_available(generator_2ch_available),
-        .capture_valid(capture_valid),
-        .generator_output_enable(generator_output_enable),
-        .sdram_request(sdram_request)
-    );
-endmodule

@@ -15,8 +15,8 @@ module tb_permit_matrix;
     integer permit_index,tick;
     reg previous_phase;
     // Exercise legacy wrapper forwarding against the unchanged permit matrix.
-    netcircuit_experiment_top dut(.*);
-    netcircuit_instrument_scaffold instruments(
+    cirnet_experiment_top dut(.*);
+    cirnet_instrument_scaffold instruments(
         .control_clk(clk),.acquisition_clk(clk),.generator_clk(clk),.sdram_clk(clk),.reset_n(reset_n),
         .capture_request(capture_request),.generator_request(generator_request),.logic_analyzer_available(la),
         .scope_2ch_available(scope),.generator_2ch_available(generator),.capture_valid(capture_valid),

@@ -19,64 +19,6 @@ def run_script(name, *args):
                           capture_output=True, text=True, timeout=90)
 
 
-def test_source_archive_rebuild_has_same_bytes_and_rejects_unsafe_input(tmp_path):
-    script = ROOT/'scripts/build_source.py'
-    assert script.is_file(), 'versioned deterministic source builder is missing'
-    provenance = ROOT/'integration/source-provenance.json'
-    historical_provenance = provenance.read_bytes()
-    first,second = tmp_path/'first.tar.gz',tmp_path/'second.tar.gz'
-    for path in (first,second):
-        result = run_script('build_source.py','--output',path,'--provenance',provenance)
-        assert result.returncode == 0, result.stdout+result.stderr
-    assert first.read_bytes() == second.read_bytes()
-    with tarfile.open(first, 'r:gz') as archive:
-        metadata = json.loads(archive.extractfile('fpga-artifact.json').read())
-        assert metadata['name'] == 'cirnet-fpga-scaffold'
-        assert metadata['version'] == '0.1.2'
-        assert metadata['contractsVersion'] == '0.1.2'
-        source = metadata['source']
-    assert source['repository'] == 'https://github.com/cirnetlab/cirnet-fpga.git'
-    historical = json.loads(historical_provenance)
-    assert historical['repository'] == 'https://github.com/cirnetlab/cirnet-fpga.git'
-    assert historical['originalRepository'] == 'https://github.com/cirnetlab/cirnet-remote.git'
-    assert source['originalRepository'] == 'https://github.com/cirnetlab/cirnet-remote.git'
-    assert source['originalRevision'] == historical['originalRevision']
-    assert provenance.read_bytes() == historical_provenance
-    unrelated = tmp_path/'unrelated-provenance.json'
-    unrelated.write_text(json.dumps({**historical, 'repository': 'https://github.com/unrelated/other.git'}))
-    rejected = tmp_path/'unrelated.tar.gz'
-    result = run_script('build_source.py', '--output', rejected, '--provenance', unrelated)
-    assert result.returncode != 0, 'An unrelated repository must never be relabelled as CIRNET-FPGA'
-    assert 'repository' in result.stderr.lower()
-    assert not rejected.exists()
-    unrelated.write_text(json.dumps({**historical, 'originalRepository': 'https://github.com/unrelated/other.git'}))
-    result = run_script('build_source.py', '--output', rejected, '--provenance', unrelated)
-    assert result.returncode != 0, 'An unrelated original repository must never be relabelled as cirnet-remote'
-    assert 'original repository' in result.stderr.lower()
-    assert not rejected.exists()
-    result = run_script('build_source.py','--output',ROOT/'forbidden.tar.gz','--provenance',provenance)
-    assert result.returncode != 0
-    assert not (ROOT/'forbidden.tar.gz').exists()
-
-
-@pytest.mark.parametrize(('repository', 'original_repository'), [
-    ('https://github.com/cirnetlab/cirnet-fpga.git', 'https://github.com/cirnetlab/cirnet-remote.git'),
-    ('https://github.com/cirnetlab/cirnet-fpga', 'https://github.com/cirnetlab/cirnet-remote'),
-])
-def test_source_archive_canonicalizes_repositories(tmp_path, repository, original_repository):
-    source = json.loads((ROOT/'integration/source-provenance.json').read_text(encoding='utf-8'))
-    provenance = tmp_path/'provenance.json'
-    provenance.write_text(json.dumps({**source, 'repository': repository, 'originalRepository': original_repository}), encoding='utf-8')
-    output = tmp_path/'source.tar.gz'
-    result = run_script('build_source.py', '--output', output, '--provenance', provenance)
-    assert result.returncode == 0, result.stdout+result.stderr
-    with tarfile.open(output, 'r:gz') as archive:
-        metadata = json.loads(archive.extractfile('fpga-artifact.json').read())
-    assert metadata['source']['repository'] == 'https://github.com/cirnetlab/cirnet-fpga.git'
-    assert metadata['source']['originalRepository'] == 'https://github.com/cirnetlab/cirnet-remote.git'
-    assert metadata['source']['originalRevision'] == source['originalRevision']
-
-
 def test_rtl_gate_rejects_missing_explicit_toolchain(tmp_path):
     script = ROOT/'scripts/check_rtl.py'
     assert script.is_file(), 'mandatory RTL acceptance runner is missing'

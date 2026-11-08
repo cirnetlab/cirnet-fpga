@@ -78,7 +78,6 @@ function sourceFiles() {
     'fpga/simulation/tb_lab_first_control.v', 'fpga/simulation/tb_permit_matrix.v']) {
     if (!files.has(required)) throw new Error(`Missing required source: ${required}`)
   }
-  if (files.get('VERSION')?.toString().trim() !== '0.1.2') throw new Error('Unsupported scaffold source version.')
   return files
 }
 
@@ -110,12 +109,13 @@ async function build(output, provenance, allocatorPath) {
   if (!isAbsolute(output)) throw new Error('Source archive output must be absolute and allocator-owned.')
   if (inside(root, resolve(output))) throw new Error('Source archive output cannot be inside product source.')
   if (!output.endsWith('.tar.gz') || unsafePart(basename(output))) throw new Error('Expected a safe .tar.gz source archive name.')
-  const pin = JSON.parse(readFileSync(join(root, 'integration', 'contracts-version.json'), 'utf8')).dev.node_sha256
+  const contracts = JSON.parse(readFileSync(join(root, 'integration', 'contracts-version.json'), 'utf8'))
+  const pin = contracts.dev.node_sha256
   if (!allocatorPath || !isAbsolute(allocatorPath)) throw new Error('Select an absolute pinned DEV allocator with --allocator or CIRNET_ARTIFACTS_CLI.')
   const modulePath = realpathSync(allocatorPath)
   if (sha256(readFileSync(modulePath)) !== pin) throw new Error('DEV allocator SHA-256 differs from the selected pin.')
   const allocator = await import(pathToFileURL(modulePath).href)
-  const inherited = process.env.CIRNET_ARTIFACTS_SESSION ?? process.env.NETCIRCUIT_ARTIFACTS_SESSION
+  const inherited = process.env.CIRNET_ARTIFACTS_SESSION
   if (!inherited) throw new Error('Set CIRNET_ARTIFACTS_SESSION to a pinned allocator-owned external session.')
   const session = allocator.getArtifactDirectory()
   const parent = allocator.validateArtifactDirectory(dirname(output))
@@ -123,10 +123,12 @@ async function build(output, provenance, allocatorPath) {
   const destination = join(parent, basename(output))
   const source = selectedSource(provenance)
   const files = sourceFiles()
+  const version = files.get('VERSION').toString().trim()
+  if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Unsupported scaffold source version.')
   const hashes = Object.fromEntries(sortedNames(files).map(name => [name, sha256(files.get(name))]))
   const fingerprint = sha256(Object.entries(hashes).map(([name, digest]) => `${digest}  ${name}\n`).join(''))
-  const identity = { schemaVersion: 1, name: 'cirnet-fpga-scaffold', version: '0.1.2', kind: 'source',
-    contractsVersion: '0.1.2', logicalProtocolVersion: '1.0-scaffold', registerMapVersion: '1.0-reserved',
+  const identity = { schemaVersion: 1, name: 'cirnet-fpga-scaffold', version, kind: 'source',
+    contractsVersion: contracts.python.version, logicalProtocolVersion: '1.0-scaffold', registerMapVersion: '1.0-reserved',
     physicalAvailable: false, source, files: hashes, sourceFingerprint: fingerprint }
   const metadata = Buffer.from(JSON.stringify(identity, null, 2) + '\n')
   if (metadata.length > 1024 * 1024) throw new Error('FPGA source identity exceeds archive limits.')
@@ -151,7 +153,7 @@ try {
   } })
   if (!values.output) throw new Error('Usage: node scripts/build-source.mjs --output ABSOLUTE_ARCHIVE [--provenance FILE] [--allocator FILE]')
   const provenance = values.provenance ?? join(root, 'integration', 'source-provenance.json')
-  const allocator = values.allocator ?? process.env.CIRNET_ARTIFACTS_CLI ?? process.env.NETCIRCUIT_ARTIFACTS_CLI
+  const allocator = values.allocator ?? process.env.CIRNET_ARTIFACTS_CLI
   console.log(JSON.stringify(await build(values.output, provenance, allocator), null, 2))
 } catch (error) {
   console.error(`build-source: ${error.message}`)
