@@ -56,16 +56,6 @@ jobs:
         run: python -B -m pytest -q --basetemp "$CIRNET_ARTIFACTS_SESSION/pytest" --junitxml "$CIRNET_ARTIFACTS_SESSION/results.xml"
       - name: Record toolchain and both RTL results from the tested execution
         run: cat "$CIRNET_ARTIFACTS_SESSION"/fpga-leaf-rtl-*/result.json
-      - name: Build exact source artifact twice
-        run: |
-          python -B scripts/build_source.py --output "$CIRNET_ARTIFACTS_SESSION/cirnet-fpga-scaffold-0.1.2.tar.gz" --provenance integration/source-provenance.json
-          python -B scripts/build_source.py --output "$CIRNET_ARTIFACTS_SESSION/rebuilt.tar.gz" --provenance integration/source-provenance.json
-          cmp "$CIRNET_ARTIFACTS_SESSION/cirnet-fpga-scaffold-0.1.2.tar.gz" "$CIRNET_ARTIFACTS_SESSION/rebuilt.tar.gz"
-      - uses: actions/upload-artifact@v4
-        if: always() && env.CIRNET_ARTIFACTS_SESSION != ''
-        with:
-          name: cirnet-fpga-v0.1.2
-          path: ${{ env.CIRNET_ARTIFACTS_SESSION }}/cirnet-fpga-scaffold-0.1.2.tar.gz
       - name: Clean only this owned session
         if: always() && env.CIRNET_ARTIFACTS_SESSION != ''
         run: node "$CIRNET_ARTIFACTS_CLI" --cleanup "$CIRNET_ARTIFACTS_SESSION"

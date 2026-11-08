@@ -1,0 +1,58 @@
+name: FPGA native source candidate
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+
+  windows-source-candidate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+      - name: Resolve and authenticate the pinned DEV allocator
+        shell: pwsh
+        env:
+          CIRNET_ARTIFACTS_TOKEN: ${{ secrets.CIRNET_ARTIFACTS_READ_TOKEN || secrets.NETCIRCUIT_ARTIFACTS_READ_TOKEN }}
+        run: |
+          $pin = Get-Content -Raw integration/contracts-version.json | ConvertFrom-Json
+          $tools = Join-Path $env:RUNNER_TEMP 'fpga-package-inputs'
+          New-Item -ItemType Directory -Path $tools | Out-Null
+          $archive = Join-Path $tools 'dev.tgz'
+          $url = $pin.dev_npm.url
+          if ($url -cnotmatch '^https://api\.github\.com/repos/cirnetlab/cirnet-contracts/releases/assets/[0-9]+$') { throw 'Invalid DEV asset URL' }
+          $auth = @()
+          if ($env:CIRNET_ARTIFACTS_TOKEN) { $auth = @('--header', "Authorization: Bearer $env:CIRNET_ARTIFACTS_TOKEN") }
+          curl.exe --fail --location --silent --show-error --header 'Accept: application/octet-stream' @auth --output $archive $url
+          if ($LASTEXITCODE -or (Get-FileHash -Algorithm SHA256 $archive).Hash -ine $pin.dev_npm.sha256) { throw 'DEV archive SHA-256 mismatch' }
+          tar.exe -xf $archive -C $tools $pin.dev_npm.member
+          if ($LASTEXITCODE) { throw 'Could not extract pinned DEV allocator' }
+          $allocator = Join-Path $tools $pin.dev_npm.member
+          if ((Get-FileHash -Algorithm SHA256 $allocator).Hash -ine $pin.dev.node_sha256) { throw 'DEV allocator SHA-256 mismatch' }
+          $session = node $allocator --directory (Join-Path $env:RUNNER_TEMP 'fpga-packaging')
+          if ($LASTEXITCODE -or !$session) { throw 'Allocation failed' }
+          "CIRNET_ARTIFACTS_CLI=$allocator" >> $env:GITHUB_ENV
+          "CIRNET_ARTIFACTS_SESSION=$session" >> $env:GITHUB_ENV
+      - name: Verify deterministic source packaging and build candidate
+        shell: pwsh
+        run: |
+          node --test tests/build-source.test.mjs
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.1.2-native-source.tar.gz') |
+            Tee-Object -FilePath (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'fpga-source-receipt.json')
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cirnet-fpga-native-source-candidate
+          path: |
+            ${{ env.CIRNET_ARTIFACTS_SESSION }}/cirnet-fpga-scaffold-0.1.2-native-source.tar.gz
+            ${{ env.CIRNET_ARTIFACTS_SESSION }}/fpga-source-receipt.json
+      - name: Clean only this owned session
+        if: always() && env.CIRNET_ARTIFACTS_SESSION != ''
+        shell: pwsh
+        run: node $env:CIRNET_ARTIFACTS_CLI --cleanup $env:CIRNET_ARTIFACTS_SESSION

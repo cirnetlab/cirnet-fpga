@@ -12,6 +12,7 @@
 
 ### Changed
 
+- Added a Node-only Windows packaging lane for the deterministic source candidate. The candidate retains the source inventory and FPGA version domains while Python tooling stays in isolated RTL verification and historical reference. [Verification guide](../en/verification.md)
 - CI records the toolchain and both RTL behavior markers from the required pytest execution. [CI change](https://github.com/cirnetlab/cirnet-fpga/commit/c4bf5f04df063aa417ab1e22c65bca680305e4dd)
 - Added versioned release notes, bilingual documentation conventions and a clean-export procedure for local package verification. [Documentation conventions](../en/contributing/writing-documentation.md) · [Verification guide](../en/verification.md)
 

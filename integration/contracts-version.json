@@ -13,5 +13,10 @@
     "version": "1.0.0a1",
     "wheel_sha256": "61009f539e672cd6bdd799c608d30273f2e6988ad429147b2efa8e3873d51c08",
     "node_sha256": "742ef11f9083beaf901d0d4f9a5a777d87aeae71a990597f9640a1b3a9329b5a"
+  },
+  "dev_npm": {
+    "url": "https://api.github.com/repos/cirnetlab/cirnet-contracts/releases/assets/712718440",
+    "sha256": "764fda1ffcb189af5c063653b8656fd3acdab1877f2f87b74182fff3269f9132",
+    "member": "package/cirnet_artifact_paths/artifact-paths.mjs"
   }
 }

@@ -4,13 +4,27 @@ English · [Tiếng Việt](../vi/verification.md)
 
 [Documentation index](index.md)
 
-Use a fresh environment outside all checkouts. Current CI uses Node 26 and Python 3.14. Select the exact Contracts 0.1.2 wheel and DEV allocator by digest. The hash-locked closure includes `pyslang==12.0.0`. Use the pinned OSS CAD Suite dated 2026-10-26 with its exact Icarus and vvp builds.
+## Build the native source candidate
+
+Use Node 26 and Git. Extract the allocator module from the DEV npm archive pinned in [the artifact lock](../../integration/contracts-version.json). Verify both SHA-256 digests and set `CIRNET_ARTIFACTS_CLI` to the absolute path of the verified module. The Node packager checks the module digest again before loading it.
+
+~~~powershell
+$env:CIRNET_ARTIFACTS_SESSION = node $env:CIRNET_ARTIFACTS_CLI
+node --test tests/build-source.test.mjs
+node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.1.2-native-source.tar.gz')
+~~~
+
+Run from the FPGA checkout. For a source export, supply the allocator context of the originating checkout and use `--provenance` with the exact exported revision and migration state. The receipt records the archive SHA-256, revision, dirty state and Node/zlib versions. The archive includes only the source scaffold, with the existing logical and register-map identities. CI packages this candidate in a separate Windows job. The published release lock remains authoritative for the historical archive.
+
+## Isolated RTL verification
+
+Use a fresh environment outside all checkouts. Current RTL CI uses Node 26 and Python 3.14. Select the exact Contracts 0.1.2 wheel and DEV allocator by digest. The hash-locked closure includes `pyslang==12.0.0`. Use the pinned OSS CAD Suite dated 2026-10-26 with its exact Icarus and vvp builds.
 
 ## Verify a clean export
 
 Start in the FPGA checkout in PowerShell 7. Replace the manifest and archive placeholders with reviewed absolute paths. Omitting `--archive` uses the installer’s pinned download.
 
-The pytest suite includes source archive builds. The packager checks every checkout-root entry against its input list, including ignored entries such as `.superpowers/`. Bootstrap from the checkout to retain its Git context, then run pytest and the archive builder from a clean export of the reviewed commit in the owned session. The export contains committed files only. Treat results for uncommitted edits as candidate evidence with its own recorded inputs.
+The pytest suite retains legacy Python archive tests. That reference packager checks every checkout-root entry against its input list, including ignored entries such as `.superpowers/`. Bootstrap from the checkout to retain its Git context, then run pytest from a clean export of the reviewed commit in the owned session. The export contains committed files only. Treat results for uncommitted edits as candidate evidence with its own recorded inputs.
 
 Run the commands in order and stop at the first failure.
 
@@ -40,34 +54,13 @@ python -B -m pip check
 $tool = python -B scripts/install_toolchain.py --archive C:/absolute/oss-cad-suite-archive
 $env:CIRNET_FPGA_TOOLCHAIN_ROOT = ($tool -join [Environment]::NewLine | ConvertFrom-Json).root
 python -B -m pytest -q --basetemp (Join-Path $bootstrap.session 'pytest')
+Pop-Location
 ~~~
 
 The pytest gate invokes `scripts/check_rtl.py` and checks its results. To run the RTL check by itself, use `python -B scripts/check_rtl.py --toolchain-root $env:CIRNET_FPGA_TOOLCHAIN_ROOT`.
 
 Both `LAB_FIRST_RTL_PASS` and `PERMIT_MATRIX_RTL_PASS` must come from actual simulation. The gate authenticates the toolchain execution closure and checks both tops. An unavailable or incorrect tool fails the gate. Compilation, parsing and elaboration alone cannot establish the behavioral result. The original bench and the permit matrix cover reset, lost permits, fault and watchdog behavior, safe stop and unavailable instruments. See the [bench guide](../../fpga/simulation/README.md).
 
-## Build the source archive
-
-From the same export, prepare an external copy of the provenance using the exported commit and build twice. Keep the tracked provenance input as recorded.
-
-~~~powershell
-$provenance = Get-Content -LiteralPath integration/source-provenance.json -Raw | ConvertFrom-Json
-$provenance.revision = $revision
-$provenance.uncommittedMigration = $false
-$provenancePath = Join-Path $bootstrap.session 'export-provenance.json'
-$provenance | ConvertTo-Json | Set-Content -LiteralPath $provenancePath -Encoding utf8NoBOM
-$archive = Join-Path $bootstrap.session 'cirnet-fpga-scaffold-0.1.2.tar.gz'
-$rebuild = Join-Path $bootstrap.session 'rebuilt.tar.gz'
-python -B scripts/build_source.py --output $archive --provenance $provenancePath
-python -B scripts/build_source.py --output $rebuild --provenance $provenancePath
-$digest = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash
-if ($digest -ne (Get-FileHash -LiteralPath $rebuild -Algorithm SHA256).Hash) {
-    throw 'Source archive rebuild differs.'
-}
-$digest
-Pop-Location
-~~~
-
-The archive contains a deterministic inventory and `fpga-artifact.json` provenance. For a release, record the clean source commit and archive SHA-256. Published archives keep their recorded identities. Inspect diagnostics before using the allocator’s guarded cleanup for your session.
+Inspect diagnostics before using the allocator’s guarded cleanup for your session.
 
 The [CI workflow](../../.github/workflows/fpga.yml) runs the Linux gate. The [dated results](history/verification/2026-11-05-fpga-verification.md#2026-11-05-fpga-012-candidate) describe the tested candidate and its limits. Software verification establishes abstract control behavior. Board programming, pinout, timing closure and electrical qualification remain separate.
