@@ -16,7 +16,7 @@ Mã nguồn hiện tại dùng Node để dựng ứng viên `cirnet-fpga-scaffo
 | Bản đồ thanh ghi dự kiến | `1.0-reserved` |
 | Firmware và giao thức vật lý | `UNAVAILABLE` |
 
-Ví dụ về mục tiêu thiết kế trong Contracts giữ nhãn minh họa `2.0-scaffold`. Schema điều khiển thực thi từ chối nhãn đó. Chọn bao lệnh logic theo phiên bản riêng của nó và dùng đúng mã băm của wheel Contracts và bộ cấp phát đã rà soát.
+[Ví dụ về mục tiêu thiết kế trong Contracts](https://github.com/cirnetlab/cirnet-contracts/blob/524cc7a5e2e65f39077feefe70c7fb2ae3a773d6/contracts/physical-lab/examples/v1-target-capabilities.json) giữ nhãn minh họa `2.0-scaffold` và đánh dấu mục tiêu chưa khả dụng. Schema điều khiển thực thi đã ghim chấp nhận `1.0-scaffold` và từ chối nhãn trong ví dụ. Chọn bao lệnh logic theo phiên bản riêng và dùng đúng mã băm của wheel Contracts cùng bộ cấp phát đã rà soát. Artifact mã nguồn công bố `physicalAvailable: false`.
 
 Cấu hình `CIRNET_*` được ưu tiên hơn `NETCIRCUIT_*`. Bộ khởi tạo đồng bộ hai tên cho công cụ cũ đã ghim. Bước kiểm chứng đọc `.cirnet-toolchain.json` và dùng `.netcircuit-toolchain.json` khi thiếu tệp chuẩn. Việc chọn artifact vẫn yêu cầu đúng bản phân phối, phiên bản và mã băm đã ghim.
 

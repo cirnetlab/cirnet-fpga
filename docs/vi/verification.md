@@ -14,7 +14,9 @@ node --test tests/build-source.test.mjs
 node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.2.2-native-source.tar.gz')
 ~~~
 
-Chạy từ checkout FPGA. Với bản xuất mã nguồn, dùng ngữ cảnh bộ cấp phát của checkout gốc và `--provenance` ghi đúng revision cùng trạng thái thay đổi. Biên nhận ghi SHA-256 của gói, revision, trạng thái thay đổi và phiên bản Node/zlib. Gói chỉ chứa khung mã nguồn với định danh giao thức logic và bản đồ thanh ghi hiện có. CI đóng gói ứng viên trong job Windows riêng. Khóa phát hành hiện hành tiếp tục xác định gói lịch sử.
+Chạy từ checkout FPGA. Với bản xuất mã nguồn, dùng ngữ cảnh bộ cấp phát của checkout gốc và `--provenance` ghi đúng revision cùng trạng thái thay đổi. Trình đóng gói yêu cầu tên `cirnet-fpga-scaffold-<VERSION>-native-source.tar.gz`, lấy phiên bản từ `VERSION`. Biên nhận ghi phiên bản, tên tệp, kích thước và SHA-256 của gói, revision mã nguồn, trạng thái thay đổi, đích mã nguồn di động và phiên bản Node/zlib. Xem `fpga-artifact.json` để đối chiếu danh mục mã nguồn, phiên bản gói Contracts đã chọn, bao lệnh logic và bản đồ thanh ghi dự kiến. CI đóng gói ứng viên trong job Windows riêng. Khóa phát hành hiện hành tiếp tục xác định gói lịch sử.
+
+Khi chọn bản phát hành, ghi yêu cầu hoặc quyết định tương thích, revision mã nguồn và Contracts, mã băm artifact kiểm chứng, định danh gói và cả hai kết quả RTL. Đối chiếu tương thích mã nguồn qua mô-đun và cổng RTL. Đối chiếu định dạng truyền qua schema logic và phiên bản. Đối chiếu hành vi qua điều kiện cấp phép an toàn và cả hai marker kiểm thử RTL. Giữ `physicalAvailable: false` cho đích chỉ chứa mã nguồn. Cần bằng chứng theo bo mạch trước khi công bố firmware hoặc giao thức vật lý.
 
 ## Kiểm chứng RTL tách biệt
 

@@ -12,6 +12,7 @@
 
 ### Changed
 
+- Bound the source candidate basename to `VERSION` and recorded the filename, size and SHA-256 in the build receipt. Documented the design target separately from the executable control envelope. [Source packaging](../en/verification.md#build-the-native-source-candidate)
 - Prepared scaffold version 0.2.2. The Node packager reads the source version from `VERSION` and records the selected Contracts version from its verification lock. [Source packaging](../en/verification.md#build-the-native-source-candidate)
 - Added a Node-only Windows packaging lane for the deterministic source candidate. The candidate retains the source inventory and FPGA version domains while Python tooling stays in isolated RTL verification and historical reference. [Verification guide](../en/verification.md)
 - CI records the toolchain and both RTL behavior markers from the required pytest execution. [CI change](https://github.com/cirnetlab/cirnet-fpga/commit/c4bf5f04df063aa417ab1e22c65bca680305e4dd)

@@ -16,7 +16,7 @@ The [system 0.1.4 release lock](https://github.com/cirnetlab/cirnet-remote/blob/
 | Conceptual register map | `1.0-reserved` |
 | Physical firmware and protocol | `UNAVAILABLE` |
 
-The Contracts design-target example retains the illustrative `2.0-scaffold` label. The executable control schema rejects that label. Select the logical envelope by its own version and use the reviewed Contracts wheel and allocator digests.
+The [Contracts design-target example](https://github.com/cirnetlab/cirnet-contracts/blob/524cc7a5e2e65f39077feefe70c7fb2ae3a773d6/contracts/physical-lab/examples/v1-target-capabilities.json) retains the illustrative `2.0-scaffold` label and marks the target unavailable. The pinned executable control schema accepts `1.0-scaffold` and rejects the example's label. Select the logical envelope by its own version and use the reviewed Contracts wheel and allocator digests. The source artifact advertises `physicalAvailable: false`.
 
 `CIRNET_*` settings take precedence over `NETCIRCUIT_*`. Bootstrap adapters synchronize both names for older pinned tools. Verification uses `.cirnet-toolchain.json` and falls back to `.netcircuit-toolchain.json` when the canonical marker is absent. Artifact selection still requires the pinned distribution, version and digest.
 

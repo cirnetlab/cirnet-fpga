@@ -125,6 +125,8 @@ async function build(output, provenance, allocatorPath) {
   const files = sourceFiles()
   const version = files.get('VERSION').toString().trim()
   if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Unsupported scaffold source version.')
+  const filename = `cirnet-fpga-scaffold-${version}-native-source.tar.gz`
+  if (basename(destination) !== filename) throw new Error(`Expected candidate archive name ${filename}.`)
   const hashes = Object.fromEntries(sortedNames(files).map(name => [name, sha256(files.get(name))]))
   const fingerprint = sha256(Object.entries(hashes).map(([name, digest]) => `${digest}  ${name}\n`).join(''))
   const identity = { schemaVersion: 1, name: 'cirnet-fpga-scaffold', version, kind: 'source',
@@ -142,7 +144,8 @@ async function build(output, provenance, allocatorPath) {
     unlinkSync(destination)
     throw error
   }
-  return { schemaVersion: 1, source: { path: destination, sha256: sha256(bytes) }, sourceFingerprint: fingerprint,
+  return { schemaVersion: 1, version, source: { path: destination, filename, size: bytes.length, sha256: sha256(bytes) },
+    sourceFingerprint: fingerprint,
     revision: source.revision, uncommittedMigration: source.uncommittedMigration, target: 'portable-source',
     toolchain: { node: process.version, zlib: process.versions.zlib } }
 }

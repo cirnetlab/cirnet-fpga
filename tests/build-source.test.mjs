@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -17,14 +17,17 @@ const pin = JSON.parse(readFileSync(join(root, 'integration', 'contracts-version
 assert.equal(createHash('sha256').update(readFileSync(allocatorPath)).digest('hex'), pin, 'DEV allocator SHA-256 mismatch')
 const allocator = await import(pathToFileURL(allocatorPath).href)
 const scratch = mkdtempSync(join(allocator.getArtifactDirectory(), 'fpga-packaging-test-'))
+const filename = `cirnet-fpga-scaffold-${readFileSync(join(root, 'VERSION'), 'utf8').trim()}-native-source.tar.gz`
 
 function build(output, provenance = source, env = process.env) {
   return spawnSync(process.execPath, [executable, '--output', output, '--provenance', provenance], { cwd: root, env, encoding: 'utf8' })
 }
 
 test('builds a deterministic candidate with a complete source-only inventory', () => {
-  const archive = join(scratch, 'candidate.tar.gz')
-  const rebuild = join(scratch, 'rebuild.tar.gz')
+  const archive = join(scratch, filename)
+  const rebuilt = join(scratch, 'rebuild')
+  mkdirSync(rebuilt)
+  const rebuild = join(rebuilt, filename)
   const first = build(archive)
   const second = build(rebuild)
   assert.equal(first.status, 0, first.stderr)
@@ -33,6 +36,8 @@ test('builds a deterministic candidate with a complete source-only inventory', (
   assert.deepEqual(bytes, readFileSync(rebuild))
   const receipt = JSON.parse(first.stdout)
   assert.equal(receipt.source.sha256, createHash('sha256').update(bytes).digest('hex'))
+  assert.equal(receipt.source.size, bytes.length)
+  assert.equal(receipt.source.filename, basename(archive))
 
   const listing = spawnSync('tar', ['-tf', archive], { encoding: 'utf8' })
   assert.equal(listing.status, 0, listing.stderr)
@@ -47,6 +52,7 @@ test('builds a deterministic candidate with a complete source-only inventory', (
   const identity = JSON.parse(metadata.stdout)
   assert.equal(identity.name, 'cirnet-fpga-scaffold')
   assert.equal(identity.version, '0.2.2')
+  assert.equal(identity.version, receipt.version)
   assert.equal(identity.contractsVersion, '0.1.2')
   assert.equal(identity.logicalProtocolVersion, '1.0-scaffold')
   assert.equal(identity.registerMapVersion, '1.0-reserved')
@@ -87,4 +93,12 @@ test('rejects unrelated provenance, a mismatched allocator, and unsafe output', 
   const alias = build(join(scratch, 'CON.tar.gz'))
   assert.notEqual(alias.status, 0)
   assert.match(alias.stderr, /safe .* archive name/i)
+})
+
+test('rejects the published archive name for different candidate bytes', () => {
+  const publishedName = join(scratch, 'cirnet-fpga-scaffold-0.1.2.tar.gz')
+  const result = build(publishedName)
+  assert.notEqual(result.status, 0)
+  assert.match(result.stderr, /candidate archive name/i)
+  assert.equal(existsSync(publishedName), false)
 })

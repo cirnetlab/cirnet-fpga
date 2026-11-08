@@ -14,7 +14,9 @@ node --test tests/build-source.test.mjs
 node scripts/build-source.mjs --output (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'cirnet-fpga-scaffold-0.2.2-native-source.tar.gz')
 ~~~
 
-Run from the FPGA checkout. For a source export, supply the allocator context of the originating checkout and use `--provenance` with the exact exported revision and migration state. The receipt records the archive SHA-256, revision, dirty state and Node/zlib versions. The archive includes only the source scaffold, with the existing logical and register-map identities. CI packages this candidate in a separate Windows job. The published release lock remains authoritative for the historical archive.
+Run from the FPGA checkout. For a source export, supply the allocator context of the originating checkout and use `--provenance` with the exact exported revision and migration state. The packager requires `cirnet-fpga-scaffold-<VERSION>-native-source.tar.gz`, with the version taken from `VERSION`. The receipt records the version, filename, archive size and SHA-256, source revision, dirty state, portable-source target and Node/zlib versions. Inspect `fpga-artifact.json` for the source inventory, selected Contracts package version, logical envelope and reserved register map. CI packages this candidate in a separate Windows job. The published release lock remains authoritative for the historical archive.
+
+For release selection, record the requirement or compatibility decision, the exact source and Contracts revisions, the verification artifact hashes, the archive identity and both RTL results. Source review covers the RTL module and port surface. Wire review covers the logical schema and its version. Behavior review covers the safety permits and both RTL test markers. Keep `physicalAvailable: false` for this source-only target. Board-specific evidence is required before advertising firmware or a physical protocol.
 
 ## Isolated RTL verification
 
